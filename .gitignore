@@ -1,0 +1,11 @@
+*~
+
+*.csv
+*.pickle
+*.nc
+outputs/*
+
+*/shapefiles/*
+
+poster_scripts/*
+

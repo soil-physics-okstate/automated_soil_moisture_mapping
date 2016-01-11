@@ -1,0 +1,1 @@
+A threshold of n > 1000 soil moisture pixels means that more than half of the pixel will be covered by our soil moisture map data.
