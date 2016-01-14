@@ -27,43 +27,20 @@ print 'Creating map for %s...' % (date_in)
 data_dir = '../data/'
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
+# set the input data directory
+input_dir = '../outputs/data/'
+input_file_str = 'oksmm_%s_%02dcm_%s.csv' % (map_var, depth, date_str)
+
 ## load static (usually pickle) data sources
 import pickle
 
 # map pickle
 m = pickle.load(open('pickles/oklahoma_basemap.pickle')) # map object
 
-grid_df = pickle.load(open(data_dir + 'grid/grid.pickle'))
-sand_df = pickle.load(open(data_dir + 'soil_properties/ssurgo/sand_content.pickle'))
-
 ## load dynamic (usually CSV) data sources
-
-precip_5day_file = data_dir + 'precip/stageiv_5_day/5_day_precip_%s.csv' % (date_str)
-precip_30day_file = data_dir + 'precip/stageiv_30_day/30_day_precip_%s.csv' % (date_str)
-
-model_file = data_dir + 'regression_models/model_%s.pickle' % (date_str)
-
-resid_file = data_dir + 'kriging_residuals/daily_OKSMM_kriging_%dcm_%s.csv' % (depth, date_str)
-
 from pandas import read_csv
 
-precip_5day_df = read_csv(precip_5day_file, names=['x','y','precip_5day']).set_index(['x','y'])
-precip_30day_df = read_csv(precip_30day_file, names=['x','y','precip_30day']).set_index(['x','y'])
-
-model = pickle.load(open(model_file))[depth]
-
-resid_df = read_csv(resid_file).set_index(['x', 'y']).sort_index()
-
-## combine and clean data
-
-df = grid_df.join(sand_df[depth], on='mukey')\
-            .join(precip_5day_df, on=['stageiv_x', 'stageiv_y'])\
-            .join(precip_30day_df, on=['stageiv_x', 'stageiv_y'])\
-            .join(resid_df)
-df.rename(columns={depth: 'sand_%d' % (depth)}, inplace=True) # set the sand column name
-df.sort_index(inplace=True) # sort by (x, y)
-df.reset_index(inplace=True) # put (x, y) back into the columns
-df.dropna(inplace=True) # drop NaNs
+df = read_csv(input_dir + input_file_str)
 
 ### Parameters
 
@@ -121,11 +98,6 @@ map_dir = '../outputs/maps/'
 map_file = map_dir + 'oksmm_%sV2_%02dcm_%s.png' % (map_var, depth, date_in)
 
 ### Computation
-
-## Predict values from model results
-df[map_var] = (model.params * df).sum(axis=1)\
-              + model.params['Intercept']\
-              + df['Z']
 
 ## Put the grid in map coordinates
 df['x'], df['y'] = (df['x'] + offset[0], df['y'] + offset[1])
