@@ -163,8 +163,8 @@ if(map_vars[map_var]['ticks']):
 (lrx, lry) = m(lons['e'] + buf, lats['s'] - buf*4)
 ax.text(llx, lly, '%d-cm %s' % (depth, map_vars[map_var]['name']),
         size = 20, family = 'sans-serif', ha = 'left', va = 'bottom')
-ax.text(lrx, lry, date_in,
-        size = 14, family = 'sans-serif', ha = 'right', va = 'bottom')
+ax.text(lrx, lry, 'valid %s CST' % (date.strftime('%-I:%M %p %B %-d, %Y')),
+        size = 11, family = 'sans-serif', ha = 'right', va = 'bottom')
 
 # RMSE
 #(rlat, rlon) = (36.332523, -101.501693)

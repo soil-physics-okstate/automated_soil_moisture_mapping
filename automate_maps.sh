@@ -6,8 +6,8 @@ cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_
 export PATH=$PATH:/usr/bin:/opt/MATLAB-R2015a/bin
 
 # get date
-date=`date -d "-1 days" +"%Y-%m-%d"`
-echo "Mapping for $date (day ${d}/${days})..."
+date=`date --utc +"%Y-%m-%d"`
+echo "Mapping for ${date}..."
 
 # load data
 cd data_retrieval

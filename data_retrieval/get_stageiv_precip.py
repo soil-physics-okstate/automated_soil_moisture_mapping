@@ -31,7 +31,7 @@ for nd in ndays:
 
     # NetCDF files' valid times include precip summed over the previous hour
     # so data collection should stop at 0500 UTC
-    nc_hours = range(1, 24*nd) # will not include 0600!
+    nc_hours = range(1, 24*nd + 1) # will not include 0600!
     nc_dh = np.array([timedelta(hours = h) for h in nc_hours])
 
     # get list of times and start a list of files
