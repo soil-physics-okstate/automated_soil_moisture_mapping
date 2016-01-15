@@ -3,9 +3,9 @@
 cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging
 
 #date0="2015-04-03"
-date0="2015-06-14"
+date0="2015-03-31"
 
-step="8 days"
+step="1 day"
 date=$date0
 depth=5
 
@@ -16,7 +16,7 @@ while [ `date -d "$date" +"%Y"` -lt 2016 ]; do
     # load data
     cd data_retrieval
     python get_soil_moisture_data.py $date
-    python get_stageiv_precip_alt_storage.py $date
+    python get_stageiv_api.py $date
     cd ..
 
     # do regression
@@ -26,7 +26,7 @@ while [ `date -d "$date" +"%Y"` -lt 2016 ]; do
 
     # do kriging and create output CSVs
     cd kriging
-    matlab -nodisplay -nosplash -nodesktop -r "krige_data('$date', '$depth'); exit;"
+    matlab -nodisplay -nosplash -nodesktop -r "krige_data('$date', '$depth'); exit;" > last_matlab_log.txt
     python create_outputs.py $date $depth
     cd ..
 

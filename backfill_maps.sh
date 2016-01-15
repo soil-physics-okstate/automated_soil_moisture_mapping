@@ -11,14 +11,14 @@ for d in `seq 1 $days`; do
     
     # load data
     cd data_retrieval
-    #python get_soil_moisture_data.py $date
-    #python get_stageiv_precip.py $date
+    python get_soil_moisture_data.py $date
+    python get_stageiv_api.py $date
 
     cd ..
 
     # do regression
     cd regression
-    #python do_regression.py $date
+    python do_regression.py $date
 
     cd ..
 
@@ -26,10 +26,10 @@ for d in `seq 1 $days`; do
     
 	# do kriging
 	cd kriging
-	#matlab -nodisplay -nosplash -nodesktop -r "krige_data('$date', '$depth'); exit;"
+	matlab -nodisplay -nosplash -nodesktop -r "krige_data('$date', '$depth'); exit;"
 
 	# create output CSV
-	#python create_outputs.py $date $depth
+	python create_outputs.py $date $depth
 	
 	cd ..
 
@@ -52,8 +52,8 @@ for f in `find . -iname "*.nc"`; do
     touch -d "`date -d \"${f:2:4}-${f:6:2}-${f:8:2} ${f:10:2}:00 UTC\"`" $f
 done
 
-# remove files older than 30 days
-find . -mtime 30 -exec rm {} \;
+# remove files older than 25 days
+find . -mtime 25 -exec rm {} \;
 echo "  Done."
 
 cd ../../..

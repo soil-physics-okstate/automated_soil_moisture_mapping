@@ -12,7 +12,7 @@ echo "Mapping for ${date}..."
 # load data
 cd data_retrieval
 python get_soil_moisture_data.py $date
-python get_stageiv_precip.py $date
+python get_stageiv_api.py $date
 
 cd ..
 
@@ -56,8 +56,8 @@ for f in `find . -iname "*.nc"`; do
     touch -d "`date -d \"${f:2:4}-${f:6:2}-${f:8:2} ${f:10:2}:00 UTC\"`" $f
 done
 
-# remove files older than 45 days
-find . -mtime +45 -exec rm {} \;
+# remove files older than 25 days
+find . -mtime +25 -exec rm {} \;
 echo "  Done."
 
 cd ../../..
