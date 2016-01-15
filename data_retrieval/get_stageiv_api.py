@@ -29,7 +29,7 @@ url = 'http://www.mesonet.org/data/public/noaa/qpe/abrfc/1hr_netcdf/%04d/%02d/%0
 data_dir = '../data/'
 
 # location to store NetCDF files temporarily
-nc_dir = data_dir + 'precip/stageiv_1h_qpe_netcdf/'
+nc_dir = '/home/jpatton/RFC_StageIV_QPE_nc/temp/'
 
 # NetCDF files' valid times include precip summed over the previous hour
 # so data collection should stop at 0500 UTC
