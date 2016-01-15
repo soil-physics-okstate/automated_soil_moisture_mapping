@@ -45,7 +45,7 @@ done
 
 # cleanup StageIV NetCDF data
 echo Cleaning up old StageIV NetCDF data...
-cd data/precip/stageiv_1h_qpe_netcdf
+cd /home/jpatton/RFC_StageIV_QPE_nc/temp/
 
 # give files modification dates based on their filenames
 for f in `find . -iname "*.nc"`; do
@@ -56,4 +56,4 @@ done
 find . -mtime 25 -exec rm {} \;
 echo "  Done."
 
-cd ../../..
+cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging
