@@ -28,8 +28,7 @@ sand_df = pickle.load(open(data_dir + 'soil_properties/ssurgo/sand_content.pickl
 
 ## load dynamic (usually CSV) data sources
 
-precip_5day_file = data_dir + 'precip/stageiv_5_day/5_day_precip_%s.csv' % (date_str)
-precip_30day_file = data_dir + 'precip/stageiv_30_day/30_day_precip_%s.csv' % (date_str)
+api_file = data_dir + 'precip/stageiv_api/api_%s.csv' % (date_str)
 
 model_file = data_dir + 'regression_models/model_%s.pickle' % (date_str)
 
@@ -37,8 +36,8 @@ resid_file = data_dir + 'kriging_residuals/daily_OKSMM_kriging_%dcm_%s.csv' % (d
 
 from pandas import read_csv
 
-precip_5day_df = read_csv(precip_5day_file, names=['x','y','precip_5day']).set_index(['x','y'])
-precip_30day_df = read_csv(precip_30day_file, names=['x','y','precip_30day']).set_index(['x','y'])
+api_df = read_csv(api_file).set_index(['x','y'])[str(depth)]
+api_df.name = 'api_%d' % (depth)
 
 model = pickle.load(open(model_file))[depth]
 
@@ -48,8 +47,7 @@ resid_df = read_csv(resid_file).set_index(['x', 'y']).sort_index()
 
 df = grid_df.join(xy2id_df)\
             .join(sand_df[depth], on='mukey')\
-            .join(precip_5day_df, on=['stageiv_x', 'stageiv_y'])\
-            .join(precip_30day_df, on=['stageiv_x', 'stageiv_y'])\
+            .join(api_df, on=['stageiv_x', 'stageiv_y'])\
             .join(resid_df)
 df.rename(columns={depth: 'sand_%d' % (depth)}, inplace=True) # set the sand column name
 df.sort_index(inplace=True) # sort by (x, y)
