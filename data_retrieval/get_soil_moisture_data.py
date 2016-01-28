@@ -21,7 +21,7 @@ url = 'http://www.mesonet.org/data/public/mesonet/mdf/%04d/%02d/%02d/%s.mdf'
 data_dir = '../data/'
 
 # load the MesoSoil data
-soil_df = pickle.load(open(data_dir + 'soil_properties/meso_soil/MesoSoil_v1_3.pickle'))
+soil_df = pickle.load(open(data_dir + 'soil_properties/meso_soil/MesoSoilv1_3.pickle'))
 
 # load the Mesonet sensor temperature rise data
 tr_df = read_csv(url % (date.year, date.month, date.day, date_str),
@@ -43,7 +43,7 @@ vwc_df = df['theta_r'] + (df['theta_s'] - df['theta_r']) / (1 + (-df['alpha']*MP
 Se_df = (vwc_df - df['theta_r'])/(df['theta_s'] - df['theta_r'])
 
 # compute hydraulic conductivity
-K_df = df['Ko']*Se_df**df['L']*(1-(1-Se_df**(df['n']/(df['n']-1)))**(1-1./df['n']))**2
+K_df = df['ko']*Se_df**df['l']*(1-(1-Se_df**(df['n']/(df['n']-1)))**(1-1./df['n']))**2
 
 # combine all soil moisture variables into a single DataFrame
 sm_df = concat([df['TR'], MP_df, vwc_df, Se_df, K_df], axis=1, keys=['TR', 'MP', 'vwc', 'Se', 'K'])
