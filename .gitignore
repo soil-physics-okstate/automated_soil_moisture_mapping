@@ -1,5 +1,6 @@
 *~
 
+*.bak
 *.csv
 *.pickle
 *.nc
