@@ -6,6 +6,7 @@ from pandas import read_csv, concat
 
 date_in = argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
+use_depths = [5, 25, 60]
 
 print 'Getting Mesonet soil moisture data for %s...' % (date_in)
 
@@ -47,6 +48,8 @@ K_df = df['ko']*Se_df**df['l']*(1-(1-Se_df**(df['n']/(df['n']-1)))**(1-1./df['n'
 
 # combine all soil moisture variables into a single DataFrame
 sm_df = concat([df['TR'], MP_df, vwc_df, Se_df, K_df], axis=1, keys=['TR', 'MP', 'vwc', 'Se', 'K'])
+sm_df.columns.names = [None, None]
+sm_df = sm_df.sort_index(1).loc[:, (slice(None), use_depths)]
 
 # save the soil moisture DataFrame
 out_dir = data_dir + 'soil_moisture/midnight/'
