@@ -1,7 +1,8 @@
 #!/bin/bash
 
-if [[ $# -ne 1 ]];
-   echo "Usage: backfill_maps.sh <number of days>"
+if [[ $# -ne 1 ]]; then
+    echo "Usage: backfill_maps.sh <number of days>"
+    exit 1
 fi
 
 cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging
