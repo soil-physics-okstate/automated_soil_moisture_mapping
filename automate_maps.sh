@@ -30,7 +30,7 @@ parallel --gnu -P 3 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
 # copy maps to servers
 cd server_functions
 #echo "Copying maps to server..."
-bash copy_map_to_server.sh
+bash copy_map_to_server.sh > log/copying_${date}.log
 #echo "  Done."
 cd ..
     
