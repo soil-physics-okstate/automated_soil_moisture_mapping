@@ -7,35 +7,35 @@ export PATH=$PATH:/usr/bin:/opt/MATLAB-R2015a/bin
 
 # get date
 date=`date --utc +"%Y-%m-%d"`
-echo "Mapping for ${date}..."
+#echo "Mapping for ${date}..."
 
 # load data
 cd data_retrieval
-echo "  Getting Mesonet soil moisture data for ${date}..."
+#echo "  Getting Mesonet soil moisture data for ${date}..."
 python get_soil_moisture_data.py $date > log/soil_moisture_${date}.log
-echo "  Getting StageIV antecedent precipitation data for ${date}..."
+#echo "  Getting StageIV antecedent precipitation data for ${date}..."
 python get_stageiv_api.py $date > log/stageiv_api_${date}.log
 cd ..
 
 # do regression
 cd regression
-echo "  Building regression models for ${date}..."
+#echo "  Building regression models for ${date}..."
 python do_regression.py $date > log/regression_${date}.log
 cd ..
 
-echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
+#echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
 parallel --gnu -P 3 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
-echo "  Done."
+#echo "  Done."
 
 # copy maps to servers
 cd server_functions
-echo "Copying maps to server..."
+#echo "Copying maps to server..."
 bash copy_map_to_server.sh
-echo "  Done."
+#echo "  Done."
 cd ..
     
 # cleanup StageIV NetCDF data
-echo "Cleaning up old StageIV NetCDF data..."
+#echo "Cleaning up old StageIV NetCDF data..."
 cd /home/jpatton/RFC_StageIV_QPE_nc/temp/
 
 # give files modification dates based on their filenames
@@ -45,6 +45,6 @@ done
 
 # remove files older than 25 days
 find . -mtime +25 -exec rm {} \;
-echo "  Done."
+#echo "  Done."
 
 cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging
