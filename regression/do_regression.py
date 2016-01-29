@@ -65,5 +65,3 @@ df[output_vars].to_csv(data_dir + 'regression_residuals/resid_%s.csv' % (date_st
 
 # save the model results
 pickle.dump(results, open(data_dir + 'regression_models/model_%s.pickle' % (date_str), 'w'))
-
-print '  Done.'

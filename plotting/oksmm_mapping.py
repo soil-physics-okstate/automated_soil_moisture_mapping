@@ -19,8 +19,6 @@ date_in = argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 depth = int(argv[2])
 
-print 'Creating map for %s...' % (date_in)
-
 ### Data
 
 # set the base data directory and the date string
@@ -175,5 +173,3 @@ ax.text(rx, ry, 'Cross-validation RMSE:\n%.3f %s' % (rmse, map_vars[map_var]['un
 
 # Save the map
 fig.savefig(map_file, dpi=dpi)
-
-print '  Done.'

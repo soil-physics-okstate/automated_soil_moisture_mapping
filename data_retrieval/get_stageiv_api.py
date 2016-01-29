@@ -82,5 +82,3 @@ for depth in sorted(api_params.keys()):
 # save precipitation to CSV
 out_dir = data_dir + 'precip/stageiv_api/'
 api_df.to_csv(out_dir + 'api_%s.csv' % (date.strftime('%Y%m%d')))
-
-print '  Done.'

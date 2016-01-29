@@ -66,5 +66,3 @@ for nd in ndays:
     # save precipitation to CSV
     out_dir = data_dir + 'precip/stageiv_%d_day/' % (nd)
     precip_df.to_csv(out_dir + '%d_day_precip_%s.csv' % (nd, date.strftime('%Y%m%d')))
-
-print '  Done.'
