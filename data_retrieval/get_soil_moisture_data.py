@@ -8,8 +8,6 @@ date_in = argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 use_depths = [5, 25, 60]
 
-print 'Getting Mesonet soil moisture data for %s...' % (date_in)
-
 # 'date' is Current Date, 0000 UTC
 # midnight is at Current Date, 0600 UTC
 date = date + timedelta(hours=6)
@@ -54,5 +52,3 @@ sm_df = sm_df.sort_index(1).loc[:, (slice(None), use_depths)]
 # save the soil moisture DataFrame
 out_dir = data_dir + 'soil_moisture/midnight/'
 sm_df.to_csv(out_dir + 'sm_data_%s.csv' % (date.strftime('%Y%m%d')))
-
-print '  Done.'

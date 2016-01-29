@@ -11,44 +11,31 @@ echo "Mapping for ${date}..."
 
 # load data
 cd data_retrieval
-python get_soil_moisture_data.py $date
-python get_stageiv_api.py $date
-
+echo "  Getting Mesonet soil moisture data for ${date}..."
+python get_soil_moisture_data.py $date > log/soil_moisture_${date}.log
+echo "  Getting StageIV antecedent precipitation data for ${date}..."
+python get_stageiv_api.py $date > log/stageiv_api_${date}.log
 cd ..
 
 # do regression
 cd regression
-python do_regression.py $date
-
+echo "  Building regression models for ${date}..."
+python do_regression.py $date > log/regression_${date}.log
 cd ..
 
-for depth in 5 25 60; do
-    
-    # do kriging
-    cd kriging
-    matlab -nodisplay -nosplash -nodesktop -r "krige_data('$date', '$depth'); exit;"
-
-    # create output CSV
-    python create_outputs.py $date $depth
-    
-    cd ..
-
-    # do plotting
-    cd plotting
-    python oksmm_mapping.py $date $depth
-
-    cd ..
-
-done
+echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
+parallel --gnu -P 3 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
+echo "  Done."
 
 # copy maps to servers
 cd server_functions
-echo Copying maps to server...
+echo "Copying maps to server..."
 bash copy_map_to_server.sh
+echo "  Done."
 cd ..
     
 # cleanup StageIV NetCDF data
-echo Cleaning up old StageIV NetCDF data...
+echo "Cleaning up old StageIV NetCDF data..."
 cd /home/jpatton/RFC_StageIV_QPE_nc/temp/
 
 # give files modification dates based on their filenames

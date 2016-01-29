@@ -16,8 +16,6 @@ nd = 24
 date_in = argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 
-print 'Getting StageIV antecedent precipitation indicies for %s...' % (date_in)
-
 # 'date' is Current Date, 0000 UTC
 # midnight is at Current Date, 0600 UTC
 date = date + timedelta(hours=6)

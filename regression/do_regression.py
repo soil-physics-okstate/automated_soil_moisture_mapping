@@ -4,8 +4,6 @@ from datetime import datetime
 date_in = argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 
-print 'Regressing soil moisture against sand content and precipitation for %s...' % (date_in)
-
 ## Data
 
 # set the base data directory and the date string

@@ -11,3 +11,4 @@ outputs/*
 poster_scripts/*
 
 *log.txt
+*.log

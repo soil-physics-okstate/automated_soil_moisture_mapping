@@ -1,9 +1,16 @@
 #!/bin/bash
 
-cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging
-days=3
+if [[ $# -ne 1 ]];
+   echo "Usage: backfill_maps.sh <number of days>"
+fi
 
-for d in `seq 1 $days`; do
+cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging
+days=$1
+
+# set path for Matlab
+export PATH=$PATH:/usr/bin:/opt/MATLAB-R2015a/bin
+
+for d in `seq 0 $days`; do
 
     # get date
     date=`date -d "-$d days" +"%Y-%m-%d"`
@@ -11,40 +18,34 @@ for d in `seq 1 $days`; do
     
     # load data
     cd data_retrieval
+    echo "  Getting Mesonet soil moisture data for ${date}..."
     python get_soil_moisture_data.py $date
+    echo "  Getting StageIV antecedent precipitation data for ${date}..."
     python get_stageiv_api.py $date
-
     cd ..
 
     # do regression
     cd regression
+    echo "  Building regression models for ${date}..."
     python do_regression.py $date
-
     cd ..
 
-    for depth in 5 25 60; do
-    
-	# do kriging
-	cd kriging
-	matlab -nodisplay -nosplash -nodesktop -r "krige_data('$date', '$depth'); exit;"
+    echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
+    parallel --gnu -P 3 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
 
-	# create output CSV
-	python create_outputs.py $date $depth
-	
-	cd ..
-
-	# do plotting
-	cd plotting
-	python oksmm_mapping.py $date $depth
-
-	cd ..
-
-    done
+    echo "  Done."
 	
 done
 
+# copy maps to servers
+cd server_functions
+echo "Copying maps to server..."
+bash copy_map_to_server.sh
+echo "  Done."
+cd ..
+
 # cleanup StageIV NetCDF data
-echo Cleaning up old StageIV NetCDF data...
+echo "Cleaning up old StageIV NetCDF data..."
 cd /home/jpatton/RFC_StageIV_QPE_nc/temp/
 
 # give files modification dates based on their filenames
