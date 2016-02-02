@@ -4,7 +4,7 @@ from datetime import datetime
 
 start = 0
 
-df = pickle.load(open('grid.pickle')).dropna()
+df = pickle.load(open('../grid/grid.pickle')).dropna()
 df['elev'] = np.nan
 
 pts = zip(df.reset_index()['x'].values[start:], df.reset_index()['y'].values[start:])
