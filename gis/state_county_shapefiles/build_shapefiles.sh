@@ -5,6 +5,7 @@ wget http://www2.census.gov/geo/tiger/TIGER2014/COUNTY/tl_2014_us_county.zip -O 
 
 # unzip
 unzip -f tl_2014_us_county.zip -d tl_2014_us_county
+rm tl_2014_us_county.zip
 
 # extract Oklahoma counties into their own shapefile
 input=tl_2014_us_county
