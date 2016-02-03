@@ -2,13 +2,14 @@ venv/*
 
 *~
 
+*tl_2014*
+
+*.zip
 *.bak
 *.csv
 *.pickle
 *.nc
 outputs/*
-
-*/shapefiles/*
 
 poster_scripts/*
 
