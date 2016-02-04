@@ -5,14 +5,14 @@ venv/*
 *tl_2014*
 *gSSURGO*
 
+*.pyc
 *.zip
 *.bak
 *.csv
 *.pickle
 *.nc
-outputs/*
 
-poster_scripts/*
+outputs/*
 
 *log.txt
 *.log
