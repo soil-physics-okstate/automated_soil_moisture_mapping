@@ -1,3 +1,5 @@
+dbname='soilmapnik'
+
 ## Oklahoma coordinates
 #   lats: south, north, center, origin
 #   lons: east, west, center, origin
@@ -81,10 +83,10 @@ ys = np.concatenate((ydown, yup))
 
 import psycopg2
 
-conn = psycopg2.connect('dbname=soilmapnik')
+conn = psycopg2.connect('dbname=%s' % (dbname))
 cur = conn.cursor()
 
-table = 'soil_moisture_grid_id'
+table = 'soil_moisture_grid'
 
 query =  'INSERT INTO %s ' % (table)
 query += '(id, x, y) VALUES (%s, %s, %s);'

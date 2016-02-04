@@ -3,7 +3,7 @@
 # set dbname
 dbname="soilmapnik"
 
-# download the gSSURGO dataset, then change this filename
+# download the gSSURGO dataset, then change this filename to match
 fname="soils_GSSURGO_ok_2939077_01.zip"
 
 # unzip

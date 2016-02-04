@@ -1,4 +1,4 @@
-CREATE TABLE soil_moisture_grid_id (
+CREATE TABLE soil_moisture_grid (
        id INTEGER PRIMARY KEY,
        x INTEGER,
        y INTEGER
