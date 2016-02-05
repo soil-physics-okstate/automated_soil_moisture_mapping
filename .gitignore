@@ -12,6 +12,7 @@ venv/*
 *.pickle
 *.nc
 
+dynamic_data/*
 outputs/*
 
 *log.txt

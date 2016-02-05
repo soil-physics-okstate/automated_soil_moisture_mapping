@@ -16,11 +16,12 @@ date_str = date.strftime('%Y%m%d%H%M') # yyyymmddHHMM
 url = 'http://www.mesonet.org/data/public/mesonet/mdf/%04d/%02d/%02d/%s.mdf'
 # url takes (year, month, day, date_str)
 
-# set the data directory
-data_dir = '../data/'
+# set the data directories
+input_data_dir = '../static_data/'
+output_data_dir = '../dynamic_data/'
 
 # load the MesoSoil data
-soil_df = pickle.load(open(data_dir + 'soil_properties/meso_soil/MesoSoilv1_3.pickle'))
+df = pickle.load(open(input_data_dir + 'soil_properties/meso_soil/MesoSoilv1_3.pickle'))
 
 # load the Mesonet sensor temperature rise data
 tr_df = read_csv(url % (date.year, date.month, date.day, date_str),
@@ -30,7 +31,7 @@ tr_df = read_csv(url % (date.year, date.month, date.day, date_str),
 tr_df.columns = [['TR', 'TR', 'TR'], [5, 25, 60]]
 
 # combine data into a single DataFrame
-df = soil_df.join(tr_df)
+df = df.join(tr_df)
 
 # compute matric potential
 MP_df = -0.717 * np.exp(1.788*df['TR'])
@@ -50,5 +51,5 @@ sm_df.columns.names = [None, None]
 sm_df = sm_df.sort_index(1).loc[:, (slice(None), use_depths)]
 
 # save the soil moisture DataFrame
-out_dir = data_dir + 'soil_moisture/midnight/'
+out_dir = output_data_dir + 'soil_moisture/06Z/'
 sm_df.to_csv(out_dir + 'sm_data_%s.csv' % (date.strftime('%Y%m%d')))

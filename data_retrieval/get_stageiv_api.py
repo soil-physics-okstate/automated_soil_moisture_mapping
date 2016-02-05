@@ -23,11 +23,12 @@ date = date + timedelta(hours=6)
 url = 'http://www.mesonet.org/data/public/noaa/qpe/abrfc/1hr_netcdf/%04d/%02d/%02d/%s.nc'
 # url takes (year, month, day, t_str)
 
-# set data_dir
-data_dir = '../data/'
+# set data directories
+input_data_dir = '../static_data/'
+output_data_dir = '../dynamic_data/'
 
 # location to store NetCDF files temporarily
-nc_dir = '/home/jpatton/RFC_StageIV_QPE_nc/temp/'
+nc_dir = '/home/OSU/jcpatto/hourly_stageiv_precip_netcdf/'
 
 # NetCDF files' valid times include precip summed over the previous hour
 # so data collection should stop at 0500 UTC
@@ -80,5 +81,5 @@ for depth in sorted(api_params.keys()):
         api_df = api_df.join(temp_df)
     
 # save precipitation to CSV
-out_dir = data_dir + 'precip/stageiv_api/'
+out_dir = output_data_dir + 'precip/stageiv_api/'
 api_df.to_csv(out_dir + 'api_%s.csv' % (date.strftime('%Y%m%d')))
