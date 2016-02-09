@@ -16,8 +16,11 @@ from pandas import DataFrame
 fname = 'mesonet_geoinfo.pickle'
 if not isfile(fname):
 
-    columns = 'stid,elev'
-    query = 'SELECT %s FROM mesonet_geoinfo;' % (columns)
+    columns = 'stid,elev,x,y'
+    columns_sql =  'stid,elev,'
+    columns_sql += 'ST_X(ST_Transform(geom, 990001)) AS x,'
+    columns_sql += 'ST_Y(ST_Transform(geom, 990001)) AS y'
+    query = 'SELECT %s FROM mesonet_geoinfo;' % (columns_sql)
 
     cur.execute(query)
 
@@ -27,7 +30,6 @@ if not isfile(fname):
 else: 
     
     df = pickle.load(open(fname))
-
 
 # Get SSURGO mukey
 
