@@ -3,45 +3,46 @@ from datetime import datetime
 
 date_in = argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
+depths = [5, 25, 60]
 
 ## Data
 
 # set the base data directory and the date string
-data_dir = '../data/'
+input_static_data_dir = '../static_data/'
+input_dynamic_data_dir = '../dynamic_data/'
+output_data_dir = '../dynamic_data/'
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
 # load static (pickled) data sources
 import pickle
 
-meso_df = pickle.load(open(data_dir + 'grid/mesonet_geoinfo.pickle'))
-sand_df = pickle.load(open(data_dir + 'soil_properties/ssurgo/sand_content.pickle'))
+meso_df = pickle.load(open(input_static_data_dir + 
+                           'mesonet/mesonet_geoinfo_ssurgo_stageiv.pickle'))
+texture_df = pickle.load(open(input_static_data_dir + 
+                              'soil_properties/ssurgo/ssurgo_texture_by_mukey.pickle'))
 
 # load dynamic (CSV) data sources
-
-api_file = data_dir + 'precip/stageiv_api/api_%s.csv' % (date_str)
-sm_file = data_dir + 'soil_moisture/midnight/sm_data_%s.csv' % (date_str)
-
 from pandas import read_csv
 
-api_df = read_csv(api_file).set_index(['x', 'y'])
+api_file = input_dynamic_data_dir + 'precip/stageiv_api/api_%s.csv' % (date_str)
+sm_file = input_dynamic_data_dir + 'soil_moisture/06Z/sm_data_%s.csv' % (date_str)
+
+api_df = read_csv(api_file, index_col=[0,1])
 sm_df = read_csv(sm_file, header=[0,1], index_col=0)
 
-# need to fix the api DataFrame columns to have names
-depths = [5, 25, 60]
-api_df.columns = ['api_%d' % (d) for d in depths]
+# give the texture, api, and sm DataFrame column names
+# that can be used in OLS formulae
+texture_df.columns = ['%s_%d' % (col) for col in texture_df.columns.values]
+api_df.columns = ['api_%s' % (col) for col in api_df.columns.values]
+sm_df.columns = ['%s_%s' % (col) for col in sm_df.columns.values]
 
-# need to fix the soil moisture DataFrame columns to have integer depths
-# the levels in a MultiIndex are sorted by string value, which is why 25 comes first
-sm_df.columns.set_levels(level=1, levels=[25,5,60], inplace=True)
-
-# combine data
-df = meso_df.join(sand_df, on='mukey')\
-            .join(sm_df['vwc'], lsuffix='_sand', rsuffix='_vwc')\
+# combine everything into one DataFrame
+from pandas import to_numeric
+df = meso_df.join(texture_df, on='mukey')\
             .join(api_df, on=['s4x', 's4y'])\
+            .join(sm_df)\
+            .apply(to_numeric)
 
-for d in depths: # OLS function cannot handle leading numbers in variables
-    df.rename(inplace=True, columns={'%d_vwc' % (d): 'vwc_%d' % (d),
-                                     '%d_sand' % (d): 'sand_%d' % (d)})
 
 ## Calculation
 
@@ -61,7 +62,9 @@ for d in depths:
 
 # output the variables needed for the kriging routine
 output_vars = ['x', 'y', 'resid_5', 'resid_25', 'resid_60']
-df[output_vars].to_csv(data_dir + 'regression_residuals/resid_%s.csv' % (date_str))
+df[output_vars].to_csv(output_data_dir + 
+                       'regression/residual/resid_%s.csv' % (date_str))
 
 # save the model results
-pickle.dump(results, open(data_dir + 'regression_models/model_%s.pickle' % (date_str), 'w'))
+pickle.dump(results, open(output_data_dir + 
+                          'regression/model/model_%s.pickle' % (date_str), 'w'))
