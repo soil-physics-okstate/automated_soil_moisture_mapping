@@ -93,4 +93,4 @@ from scipy.io import savemat
 
 df = df.dropna()
 output_dict = {'x': df['x'].values, 'y': df['y'].values}
-savemat('soil_moisture_grid.mat', output_dict)
+savemat('soil_moisture_grid.mat', output_dict, oned_as='column')

@@ -19,7 +19,7 @@ function [krigResult] = krige_data(map_date_str,depth)
 
 
   %% STEP 0 - Set path to Geostats Toolbox
-  spt_path = '/home/OSU/jpatto/geostats_toolbox';
+  spt_path = '/home/OSU/jcpatto/geostats_toolbox/';
   addpath(genpath(spt_path));
 
   %% Step 1 - Load the grid to be kriged upon

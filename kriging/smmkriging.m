@@ -47,8 +47,8 @@ function [krigResult]=smmkriging(grid,map_date_str,resid_data,depth,model,param)
   obs = [mesX mesY zVar]; % Mesonet x coordinates, Mesonet y coordinates, soil moisture variable
 
   % get grid
-  gridX = grid.x;
-  gridY = grid.y;
+  gridX = double(grid.x);
+  gridY = double(grid.y);
   pred = [gridX gridY]; % Grid x-y coordinates
 
 
