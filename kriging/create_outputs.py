@@ -48,9 +48,9 @@ texture_df.columns = ['%s_%d' % (col) for col in texture_df.columns.values]
 api_df.columns = ['api_%s' % (col) for col in api_df.columns.values]
 
 # combine and clean data
-df = grid_df.join(texture_df[depth], on='mukey')\
+df = grid_df.join(texture_df, on='mukey')\
             .join(api_df, on=['s4x', 's4y'])\
-            .join(resid_df)
+            .join(resid_df, on=['x', 'y'])
 df.sort_index(inplace=True) # sort by (x, y)
 df.reset_index(inplace=True) # put (x, y) back into the columns
 df.dropna(inplace=True) # drop NaNs
@@ -61,6 +61,6 @@ df[map_var] = ( (model.params * df).sum(axis=1) # sum the model params * values
                 + df['Z'] )                     # ... and the residuals
 
 # Output columns of interest
-cols = ['id','x','y','longitude','latitude','vwc']
+cols = ['id','vwc']
 output_fname = '%s_%02dcm_%s.csv' % (map_var, depth, date_str)
-df[cols].to_csv(output_dir + 'kriging_result/' + output_str, index=False)
+df[cols].to_csv(output_dir + 'kriging_result/' + output_fname, index=False)
