@@ -87,3 +87,10 @@ if not isfile(fname):
 else:
 
     df = pickle.load(open(fname))
+
+# save a matfile for Matlab
+from scipy.io import savemat
+
+df = df.dropna()
+output_dict = {'x': df['x'].values, 'y': df['y'].values}
+savemat('soil_moisture_grid.mat', output_dict)

@@ -15,31 +15,32 @@ function [model,param]=semivarfit2(d,V,N,map_date_str,depth)
 % This function is adapted from semivarfit.m created by Andres Patrignani
 % Modified by Jingnuo Dong 7/4/2015
 
-modelnamesgeo = {'spherV','gaussV','exponV'};
-modelnames = {'Spherical','Gaussian','Exponential'};
-modellist = {'sphericalV','gaussianV','exponentialV'};
-% initial guess values for the parameters
-param0 = {0, [mean(V) d(1)]}; % {nugget, [sill range]}
-paramlist = cell(length(modellist),1);
-MSE = nan(length(modellist),1);
-for i=1:length(modellist)
+  modelnamesgeo = {'spherV','gaussV','exponV'};
+  modelnames = {'Spherical','Gaussian','Exponential'};
+  modellist = {'sphericalV','gaussianV','exponentialV'};
+
+  % initial guess values for the parameters
+  param0 = {0, [mean(V) d(1)]}; % {nugget, [sill range]}
+  paramlist = cell(length(modellist),1);
+  MSE = nan(length(modellist),1);
+  for i=1:length(modellist)
     model = {'nuggetV',modellist{i}};
     [paramlist{i},~]=modelfit(d,V,N,model,param0);
     MSE(i) = mean((feval(modellist{i},d,paramlist{i}{2})-V).^2);
-end
+  end
 
-% % the power model needs its own set of intial guesses
-% model = {'nuggetV',modellist{end}};
-% [paramlist{end},~]=modelfit(d,V,N,model,{0,[min(V) 0]});
-% MSE(end) = mean((feval(modellist{end},d,paramlist{end}{2})-V).^2);
+  % % the power model needs its own set of intial guesses
+  % model = {'nuggetV',modellist{end}};
+  % [paramlist{end},~]=modelfit(d,V,N,model,{0,[min(V) 0]});
+  % MSE(end) = mean((feval(modellist{end},d,paramlist{end}{2})-V).^2);
 
-[~,model_idx] = min(MSE);
-param = paramlist{model_idx};
-model = modelnamesgeo{model_idx};
+  [~,model_idx] = min(MSE);
+  param = paramlist{model_idx};
+  model = modelnamesgeo{model_idx};
 
-% plot empirical variograms and the fitted models
-figure
-for i=1:length(modellist)
+  % plot empirical variograms and the fitted models
+  figure
+  for i=1:length(modellist)
     subplot(2,2,i)
     set(gca,'FontSize',14);
     plot(d,V,'ok')
@@ -49,6 +50,7 @@ for i=1:length(modellist)
     xlabel('Lag distance (m)');
     title(modelnames{i});
     hold off
+  end
+  print(strcat('../output/semivariogram/semivariogram_',depth,'cm_', map_date_str), '-dpng');
+
 end
-print(strcat('../outputs/variograms/variogram_',depth,'cm_', map_date_str), '-dpng');
-    
