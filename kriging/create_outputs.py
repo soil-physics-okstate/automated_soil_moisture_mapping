@@ -15,50 +15,52 @@ depth = int(argv[2])
 data_dir = '../data/'
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
-# set the output directory and output file name
-output_dir = '../outputs/data/'
-output_str = 'oksmm_%s_%02dcm_%s.csv' % (map_var, depth, date_str)
+# set the output directory
+output_dir = '../output/'
 
-## load static (usually pickle) data sources
+# load static data sources
 import pickle
 
-grid_df = pickle.load(open(data_dir + 'grid/grid.pickle'))
-xy2id_df = pickle.load(open(data_dir + 'grid/xy2id_lat_lon.pickle'))
-sand_df = pickle.load(open(data_dir + 'soil_properties/ssurgo/sand_content.pickle'))
+input_static_data_dir = '../static_data/'
+grid_df = pickle.load(open(input_static_data_dir + 
+                           'grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
+texture_df = pickle.load(open(input_static_data_dir + 
+                              'soil_properties/ssurgo/ssurgo_texture_by_mukey.pickle'))
 
-## load dynamic (usually CSV) data sources
+# load dynamic data sources
+input_dynamic_data_dir = '../dynamic_data/'
 
-api_file = data_dir + 'precip/stageiv_api/api_%s.csv' % (date_str)
+model = pickle.load(open(input_dynamic_data_dir + 
+                         'regression/model/model_%s.pickle' % (date_str)))
+model = model[depth] # choose only the model for the current depth
 
-model_file = data_dir + 'regression_models/model_%s.pickle' % (date_str)
-
-resid_file = data_dir + 'kriging_residuals/daily_OKSMM_kriging_%dcm_%s.csv' % (depth, date_str)
+api_file = input_dynamic_data_dir + 'precip/stageiv_api/api_%s.csv' % (date_str)
+resid_file = output_dir + 'kriging_residual/kriged_%dcm_%s.csv' % (depth, date_str)
 
 from pandas import read_csv
 
-api_df = read_csv(api_file).set_index(['x','y'])[str(depth)]
-api_df.name = 'api_%d' % (depth)
+api_df = read_csv(api_file, index_col=[0,1])
+resid_df = read_csv(resid_file, index_col=[0,1])
 
-model = pickle.load(open(model_file))[depth]
+# give the texture, api, and sm DataFrame column names
+# that match the model results
+texture_df.columns = ['%s_%d' % (col) for col in texture_df.columns.values]
+api_df.columns = ['api_%s' % (col) for col in api_df.columns.values]
 
-resid_df = read_csv(resid_file).set_index(['x', 'y']).sort_index()
-
-## combine and clean data
-
-df = grid_df.join(xy2id_df)\
-            .join(sand_df[depth], on='mukey')\
-            .join(api_df, on=['stageiv_x', 'stageiv_y'])\
+# combine and clean data
+df = grid_df.join(texture_df[depth], on='mukey')\
+            .join(api_df, on=['s4x', 's4y'])\
             .join(resid_df)
-df.rename(columns={depth: 'sand_%d' % (depth)}, inplace=True) # set the sand column name
 df.sort_index(inplace=True) # sort by (x, y)
 df.reset_index(inplace=True) # put (x, y) back into the columns
 df.dropna(inplace=True) # drop NaNs
 
-## Predict values from model results
-df[map_var] = (model.params * df).sum(axis=1)\
-              + model.params['Intercept']\
-              + df['Z']
+# Predict values from model results
+df[map_var] = ( (model.params * df).sum(axis=1) # sum the model params * values
+                + model.params['Intercept']     # ... the model intercept
+                + df['Z'] )                     # ... and the residuals
 
-## Output columns of interest
+# Output columns of interest
 cols = ['id','x','y','longitude','latitude','vwc']
-df[cols].to_csv(output_dir + output_str, index=False)
+output_fname = '%s_%02dcm_%s.csv' % (map_var, depth, date_str)
+df[cols].to_csv(output_dir + 'kriging_result/' + output_str, index=False)

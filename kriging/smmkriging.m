@@ -77,7 +77,7 @@ function [krigResult]=smmkriging(grid,map_date_str,resid_data,depth,model,param)
   %% 4. Export data 
 
   dirOut = '../output/kriging_residual/';
-  fileName = strcat(dirOut,'daily_OKSMM_kriging_',depth,'cm_',map_date_str,'.csv');
+  fileName = strcat(dirOut,'kriged_',depth,'cm_',map_date_str,'.csv');
 
   columnHeaders = {'x', 'y', 'Z', 'Zvar'}; % Specify column headers
 
