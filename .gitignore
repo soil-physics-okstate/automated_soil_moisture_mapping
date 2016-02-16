@@ -5,6 +5,8 @@ venv/*
 *tl_2014*
 *gSSURGO*
 
+*.png
+*.mat
 *.pyc
 *.zip
 *.bak
@@ -13,7 +15,7 @@ venv/*
 *.nc
 
 dynamic_data/*
-outputs/*
+output/*
 
 *log.txt
 *.log

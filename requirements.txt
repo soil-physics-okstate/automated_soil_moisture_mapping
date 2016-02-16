@@ -1,4 +1,5 @@
 Cython==0.23.4
+SQLAlchemy==1.0.11
 basemap==1.0.7
 cycler==0.9.0
 matplotlib==1.5.1

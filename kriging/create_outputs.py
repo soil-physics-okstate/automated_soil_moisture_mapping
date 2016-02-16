@@ -48,12 +48,12 @@ texture_df.columns = ['%s_%d' % (col) for col in texture_df.columns.values]
 api_df.columns = ['api_%s' % (col) for col in api_df.columns.values]
 
 # combine and clean data
-df = grid_df.join(texture_df, on='mukey')\
-            .join(api_df, on=['s4x', 's4y'])\
+df = grid_df.join(texture_df['sand_%d' % (depth)], on='mukey')\
+            .join(api_df['api_%d' % (depth)], on=['s4x', 's4y'])\
             .join(resid_df, on=['x', 'y'])
-df.sort_index(inplace=True) # sort by (x, y)
-df.reset_index(inplace=True) # put (x, y) back into the columns
-df.dropna(inplace=True) # drop NaNs
+df = df.sort_index() # sort by (x, y)
+df = df.reset_index() # put (x, y) back into the columns
+df = df.dropna() # drop NaNs
 
 # Predict values from model results
 df[map_var] = ( (model.params * df).sum(axis=1) # sum the model params * values
