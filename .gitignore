@@ -16,6 +16,7 @@ venv/*
 
 dynamic_data/*
 output/*
+database_scripts/temp_query/*
 
 *log.txt
 *.log
