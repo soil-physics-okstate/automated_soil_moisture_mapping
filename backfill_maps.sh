@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# set directory paths
 homedir=/home/OSU/jcpatto/automated_soil_moisture_mapping
+precipdir=../hourly_stageiv_precip_netcdf
 
+# check if number of days are set
 if [[ $# -ne 1 ]]; then
     echo "Usage: backfill_maps.sh <number of days>"
     exit 1
@@ -25,6 +28,7 @@ days=$1
 # set the variable
 mapvar="vwc"
 
+# loop over days
 for d in `seq 0 $days`; do
 
     # get date
@@ -61,7 +65,7 @@ done
 
 # cleanup StageIV NetCDF data
 echo "Cleaning up old StageIV NetCDF data..."
-cd ../hourly_stageiv_precip_netcdf
+cd $precipdir
 
 # give files modification dates based on their filenames
 for f in `find . -iname "*.nc"`; do
