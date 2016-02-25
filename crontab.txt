@@ -1,1 +1,1 @@
-0 8 * * * /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging/automate_maps.sh
+45 7 * * * /home/OSU/jcpatto/automated_soil_moisture_mapping/automate_maps.sh
