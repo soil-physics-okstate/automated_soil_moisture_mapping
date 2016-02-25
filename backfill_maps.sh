@@ -1,15 +1,29 @@
 #!/bin/bash
 
+homedir=/home/OSU/jcpatto/automated_soil_moisture_mapping
+
 if [[ $# -ne 1 ]]; then
     echo "Usage: backfill_maps.sh <number of days>"
     exit 1
 fi
 
-cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging
-days=$1
+# change into directory
+cd $homedir
+
+# activate virtual environment
+source ./venv/bin/activate
 
 # set path for Matlab
-export PATH=$PATH:/usr/bin:/opt/MATLAB-R2015a/bin
+export PATH=$PATH:/usr/bin:/usr/local/MATLAB/R2015a/bin/
+
+# set path for parallel
+export PATH=$PATH:$HOME/local/bin
+
+# get the number of days to loop over
+days=$1
+
+# set the variable
+mapvar="vwc"
 
 for d in `seq 0 $days`; do
 
@@ -32,22 +46,22 @@ for d in `seq 0 $days`; do
     cd ..
 
     echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
-    parallel --gnu -P 3 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
+    parallel --jobs 0 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
 
     echo "  Done."
-	
+
 done
 
 # copy maps to servers
-cd server_functions
-echo "Copying maps to server..."
-bash copy_map_to_server.sh
-echo "  Done."
-cd ..
+#cd server_functions
+#echo "Copying maps to server..."
+#bash copy_map_to_server.sh
+#echo "  Done."
+#cd ..
 
 # cleanup StageIV NetCDF data
 echo "Cleaning up old StageIV NetCDF data..."
-cd /home/jpatton/RFC_StageIV_QPE_nc/temp/
+cd ../hourly_stageiv_precip_netcdf
 
 # give files modification dates based on their filenames
 for f in `find . -iname "*.nc"`; do
@@ -55,7 +69,8 @@ for f in `find . -iname "*.nc"`; do
 done
 
 # remove files older than 25 days
-find . -mtime 25 -exec rm {} \;
-echo "  Done."
+#find . -mtime 25 -exec rm {} \;
+#echo "  Done."
 
-cd /home/jpatton/Dropbox_OSU_Soil_Physics/Patton/Projects/Soil_Moisture_Mapping_Regression_Kriging
+cd $homedir
+deactivate

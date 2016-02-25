@@ -1,6 +1,6 @@
-DROP TABLE soil_moisture_data_raster_temp;
+DROP TABLE soil_moisture_data_raster_xxDEPTHxx_temp;
 
-CREATE TABLE soil_moisture_data_raster_temp AS 
+CREATE TABLE soil_moisture_data_raster_xxDEPTHxx_temp AS 
 SELECT 
   ST_Transform(
     ST_Union(

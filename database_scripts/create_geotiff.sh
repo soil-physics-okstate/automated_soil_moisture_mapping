@@ -12,13 +12,13 @@ depth=$3
 temp_query_file=temp_query/burn_raster_${date}_${map_var}_${depth}cm.sql
 output_raster_file=../output/raster_maps/raster_${date}_${map_var}_${depth}cm.tif
 
-sed s/xxDATExx/${date}/ burn_raster_template.sql | \
-    sed s/xxVARxx/${map_var}/ | \
-    sed s/xxDEPTHxx/${depth}/ \
+sed s/xxDATExx/${date}/g burn_raster_template.sql | \
+    sed s/xxVARxx/${map_var}/g | \
+    sed s/xxDEPTHxx/${depth}/g \
     > $temp_query_file
 
-dbname='soilmapnik'
-table='soil_moisture_data_raster_temp'
+dbname=soilmapnik
+table=soil_moisture_data_raster_${depth}_temp
 
 psql $dbname -f $temp_query_file
 

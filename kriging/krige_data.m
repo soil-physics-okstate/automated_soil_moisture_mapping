@@ -17,7 +17,6 @@ function [krigResult] = krige_data(map_date_str,depth)
 %
 % Step 5: Interpolate using kriging
 
-
   %% STEP 0 - Set path to Geostats Toolbox
   spt_path = '/home/OSU/jcpatto/geostats_toolbox/';
   addpath(genpath(spt_path));
