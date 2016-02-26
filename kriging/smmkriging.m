@@ -47,8 +47,6 @@ function [krigResult]=smmkriging(grid,map_date_str,resid_data,depth,model,param)
   mesY = mesY(zVar_exists);
   obs = [mesX mesY zVar]; % Mesonet x coordinates, Mesonet y coordinates, soil moisture variable
 
-  dlmwrite('input_obs.csv', obs);
-
   % get grid
   gridX = double(grid.x);
   gridY = double(grid.y);
