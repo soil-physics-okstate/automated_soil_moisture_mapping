@@ -4,14 +4,8 @@ function [d,V,N] = empvario(resid_data,depth)
 % data from Mesonet stations
 %
 % Input:
-%       moisture_data = the output of the function deltat2vwc.m containing:
-%           - MP = matric potential [kPa]
-%           - vwc = volumetric water content [cm^3/cm^3]
-%           - Se = relative saturation [dimensionless]
-%           - K = hydraulic conductivity [cm/d]
-%           - geoinfo = Location information for each active Oklahoma Mesonet
-%       variable = 'MP', 'vwc', 'Se', 'K'
-%       depth = one of the three depths of soil moisture data; 1, 2, or 3
+%       resid_data = residual data after regression
+%       depth = the depth of the soil moisture measurement [cm]
 %
 % Output:
 %       d = the mean distance of each lag distance class
@@ -21,15 +15,16 @@ function [d,V,N] = empvario(resid_data,depth)
 
   % load volumetric water content for the designated depth
   resids = resid_data.(strcat('resid_', depth));
+  resids_exists = ~isnan(resids);
 
   % load the coordinates of all Mesonet stations
   X = resid_data.x;
   Y = resid_data.y;
 
   % exclude the stations with missing data
-  resids = resids(~isnan(resids));
-  X = X(~isnan(resids));
-  Y = Y(~isnan(resids));
+  resids = resids(resids_exists);
+  X = X(resids_exists);
+  Y = Y(resids_exists);
 
   % generate bins of lag distance
   [lagbins,N] = semivarlags(X,Y); 

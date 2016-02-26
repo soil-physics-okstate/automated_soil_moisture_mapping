@@ -37,14 +37,17 @@ function [krigResult]=smmkriging(grid,map_date_str,resid_data,depth,model,param)
 
   % get data
   zVar = resid_data.(strcat('resid_', depth));
+  zVar_exists = ~isnan(zVar);
   mesX = resid_data.x;
   mesY = resid_data.y;
 
   % remove missing data
-  zVar = zVar(~isnan(zVar));
-  mesX = mesX(~isnan(zVar));
-  mesY = mesY(~isnan(zVar));
+  zVar = zVar(zVar_exists);
+  mesX = mesX(zVar_exists);
+  mesY = mesY(zVar_exists);
   obs = [mesX mesY zVar]; % Mesonet x coordinates, Mesonet y coordinates, soil moisture variable
+
+  dlmwrite('input_obs.csv', obs);
 
   % get grid
   gridX = double(grid.x);
