@@ -33,6 +33,7 @@ for d in `seq 0 $days`; do
 
     # get date
     date=`date -d "-$d days" +"%Y-%m-%d"`
+    echo "--- `date --rfc-3339=seconds` ---"
     echo "Mapping for $date (day ${d}/${days})..."
     
     # load data
