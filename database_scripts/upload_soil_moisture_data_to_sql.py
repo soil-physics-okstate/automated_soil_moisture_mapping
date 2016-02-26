@@ -35,8 +35,11 @@ query = '''
 DELETE FROM soil_moisture_data WHERE
 ((product_valid = %s) AND (product_name = %s) AND (product_depth = %s));
 '''
-cur.execute(query, (date, map_var, depth))
-conn.commit()
+try: 
+    cur.execute(query, (date, map_var, depth))
+    conn.commit()
+except Exception:
+    conn.reset()
 conn.close()
 
 # then add data

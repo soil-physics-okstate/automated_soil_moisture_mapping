@@ -16,3 +16,15 @@ CREATE INDEX soil_moisture_grid_raster_convexhull_gix ON soil_moisture_grid_rast
        USING GIST (ST_ConvexHull(rast));
 
 VACUUM ANALYZE soil_moisture_grid_raster;
+
+ALTER TABLE soil_moisture_data
+SET (autovacuum_vacuum_scale_factor = 0.0);
+
+ALTER TABLE soil_moisture_data  
+SET (autovacuum_vacuum_threshold = 1000000);
+
+ALTER TABLE soil_moisture_data  
+SET (autovacuum_analyze_scale_factor = 0.0);
+
+ALTER TABLE soil_moisture_data  
+SET (autovacuum_vacuum_threshold = 1000000);

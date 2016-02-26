@@ -50,7 +50,10 @@ for d in `seq 0 $days`; do
     cd ..
 
     echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
-    parallel --jobs 0 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
+    parallel --jobs 3 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
+
+    echo "  Optimizing soil_moisture_data table..."
+    psql soilmapnik -c "VACUUM ANALYZE soil_moisture_data"
 
     echo "  Done."
 
