@@ -78,7 +78,7 @@ done
 
 # remove files older than 25 days
 #find . -mtime 25 -exec rm {} \;
-#echo "  Done."
+echo "  Done."
 
 cd $homedir
 deactivate
