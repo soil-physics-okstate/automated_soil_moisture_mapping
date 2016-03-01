@@ -21,12 +21,6 @@ python plot_soil_moisture_map.py $date $depth &> log/plotting_${date}_${depth}cm
 
 cd ..
 
-# upload data to database
-cd database_scripts
-python upload_soil_moisture_data_to_sql.py $date $depth &> log/db_upload_${date}_${depth}cm.log
-
-cd ..
-
 # create geotiffs
 cd rasterization
 bash rasterize_map.sh $date $mapvar $depth &> log/rasterize_${date}_${depth}cm.log

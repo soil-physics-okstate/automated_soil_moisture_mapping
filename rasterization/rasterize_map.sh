@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -ne 3 ]; then
-    echo "Usage: create_geotiff.sh <date> <map_var> <depth>"
+    echo "Usage: rasterize_map.sh <date> <map_var> <depth>"
     exit 1
 fi
 
@@ -13,18 +13,18 @@ depth=$3
 # set database
 dbname=soilmapnik
 
+# create temporary data table
+bash insert_temporary_data.sh $date $map_var $depth
+
+# get data table
+datatable=temp_soil_moisture_data_${map_var}_${depth}cm
+
 # set output file
 outfile=../output/raster_maps/raster_${date}_${map_var}_${depth}cm.tif
 
-# template query
-query="SELECT geom_point AS geom, product_value AS value \
-FROM soil_moisture_grid_opt AS g INNER JOIN soil_moisture_data AS d ON (g.id = d.id) \
-WHERE (product_valid = 'xxDATExx' AND product_name = 'xxPRODxx' AND product_depth = xxDEPTHxx)"
-
-# fill query
-query=${query/xxDATExx/$date}
-query=${query/xxPRODxx/$map_var}
-query=${query/xxDEPTHxx/$depth}
+# build query
+query="SELECT geom_point AS geom, value \
+FROM soil_moisture_grid_opt AS g INNER JOIN $datatable AS d ON (g.id = d.id)"
 
 # basename for temp files
 tmpbase=temp_${depth}cm_${map_var}

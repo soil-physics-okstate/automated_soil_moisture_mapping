@@ -53,12 +53,24 @@ for d in `seq 0 $days`; do
     echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
     parallel --jobs 3 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
 
-    echo "  Optimizing soil_moisture_data table..."
-    psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data"
+    echo "  Uploading data to soil_moisture_data_table"
+    cd database_scripts
+    for depth in 5 25 60; do
+	bash upload_soil_moisture_data_to_sql.sh $date $mapvar $depth
+    done
+    cd ..
+
+    if [ $(($d % 5)) -eq 4 ]; then
+	echo "  Optimizing soil_moisture_data table..."
+	psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data; REINDEX TABLE soil_moisture_data;"
+    fi
 
     echo "  Done."
 
 done
+
+echo "Optimizing soil_moisture_data table..."
+psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data; REINDEX TABLE soil_moisture_data;"
 
 # copy maps to servers
 #cd server_functions
