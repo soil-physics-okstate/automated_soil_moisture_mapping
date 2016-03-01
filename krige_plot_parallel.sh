@@ -25,7 +25,10 @@ cd ..
 cd database_scripts
 python upload_soil_moisture_data_to_sql.py $date $depth &> log/db_upload_${date}_${depth}cm.log
 
+cd ..
+
 # create geotiffs
-bash create_geotiff.sh $date $mapvar $depth &> log/create_geotiff_${date}_${depth}cm.log
+cd rasterization
+bash rasterize_map.sh $date $mapvar $depth &> log/rasterize_${date}_${depth}cm.log
 
 cd ..

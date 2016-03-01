@@ -54,7 +54,7 @@ for d in `seq 0 $days`; do
     parallel --jobs 3 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
 
     echo "  Optimizing soil_moisture_data table..."
-    psql soilmapnik -c "VACUUM ANALYZE soil_moisture_data"
+    psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data"
 
     echo "  Done."
 

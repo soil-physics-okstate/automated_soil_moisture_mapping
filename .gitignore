@@ -5,6 +5,10 @@ venv/*
 *tl_2014*
 *gSSURGO*
 
+*.shp
+*.dbf
+*.shx
+*.tif
 *.png
 *.mat
 *.pyc

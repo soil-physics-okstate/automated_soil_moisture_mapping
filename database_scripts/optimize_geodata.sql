@@ -12,11 +12,6 @@ CLUSTER soil_moisture_grid_opt USING soil_moisture_grid_opt_gix;
 
 ANALYZE soil_moisture_grid_opt;
 
-CREATE INDEX soil_moisture_grid_raster_convexhull_gix ON soil_moisture_grid_raster
-       USING GIST (ST_ConvexHull(rast));
-
-VACUUM ANALYZE soil_moisture_grid_raster;
-
 ALTER TABLE soil_moisture_data
 SET (autovacuum_vacuum_scale_factor = 0.0);
 
