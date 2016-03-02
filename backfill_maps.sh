@@ -62,7 +62,7 @@ for d in `seq 0 $days`; do
 
     if [ $(($d % 5)) -eq 4 ]; then
 	echo "  Optimizing soil_moisture_data table..."
-	psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data; REINDEX TABLE soil_moisture_data;"
+	psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data;"
     fi
 
     echo "  Done."
@@ -70,7 +70,8 @@ for d in `seq 0 $days`; do
 done
 
 echo "Optimizing soil_moisture_data table..."
-psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data; REINDEX TABLE soil_moisture_data;"
+psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data;"
+psql soilmapnik -b -c "REINDEX TABLE soil_moisture_data;"
 
 # copy maps to servers
 #cd server_functions
