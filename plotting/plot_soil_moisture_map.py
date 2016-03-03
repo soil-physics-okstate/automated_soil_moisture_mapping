@@ -1,5 +1,3 @@
-dbname = 'soilmapnik'
-
 ### Decouple matplotlib from X
 from matplotlib import use
 use('agg')
