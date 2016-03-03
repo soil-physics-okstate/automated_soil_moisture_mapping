@@ -19,6 +19,7 @@ cd ..
 cd plotting
 python plot_soil_moisture_map.py $date $depth &> log/plotting_${date}_${depth}cm.log
 python plot_api_map.py $date $depth &>> log/plotting_${date}_${depth}cm.log
+python plot_kriging_residuals_map.py $date $depth &>> log/plotting_${date}_${depth}cm.log
 
 cd ..
 
