@@ -1,53 +1,22 @@
-### Decouple matplotlib from X
+### Make sure matplotlib will not need interactive mode
 from matplotlib import use
 use('agg')
 
 ### Parameters
 
 ## Command-line
-
 from sys import argv
-from datetime import datetime
 
-map_var = 'vwc'
+map_var = 'vwc' # variable to plot (this will become a command-line variable in the future)
 date_in = argv[1] # current date passed in as yyyy-mm-dd
-date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 depth = int(argv[2]) # [cm]
 
-### Data
+## Plot options
 
-# get the data directories
-input_static_data_dir = '../static_data/'
-input_kriging_data_dir = '../output/kriging_result/'
-input_rmse_data_dir = '../output/kriging_cross_validation/'
-input_shapefile_dir = '../gis_setup/state_county_shapefiles/'
-map_cache_dir = 'map_cache/'
-output_dir = '../output/'
+(w, h) = (1280, 720) # width, height [px]
+dpi = 150. # [px/in]
 
-# get the date string
-date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
-
-## load static data sources
-import cPickle as pickle
-
-df = pickle.load(open(input_static_data_dir + 'grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
-m = pickle.load(open(map_cache_dir + 'oklahoma_basemap.pickle'))
-p = pickle.load(open(map_cache_dir + 'map_params.pickle'))
-cmap = pickle.load(open(map_cache_dir + 'cmap.pickle'))
-
-## load dynamic data sources
-from pandas import read_csv
-
-# get the soil moisture data
-sm_fname = '%s_%02dcm_%s.csv' % (map_var, depth, date_str)
-sm_df = read_csv(input_kriging_data_dir + sm_fname, index_col=0)
-
-# get the RMSE from cross-validation
-rmse = float(open(input_rmse_data_dir + 'rmse_%dcm_%s.csv' % (depth, date_str)).read().rstrip())
-
-### Parameters
-
-## Variables
+## Soil moisture variable definitions
 map_vars = {
     'vwc': {
         'name': 'Volumetric Water Content',
@@ -71,67 +40,99 @@ map_vars = {
     }
 }
 
-## Plots
+### Data
 
-(w, h) = (1280, 720) # width, height
-dpi = 150. # screens are usually 96 dpi
+# get the data directories
+input_static_data_dir = '../static_data/'
+input_kriging_data_dir = '../output/kriging_result/'
+input_rmse_data_dir = '../output/kriging_cross_validation/'
+input_shapefile_dir = '../gis_setup/state_county_shapefiles/'
+map_cache_dir = 'map_cache/'
+output_dir = '../output/'
+
+# get the date string
+from datetime import datetime
+
+date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
+date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
+
+## load static data sources
+import cPickle as pickle
+
+# grid
+df = pickle.load(open(input_static_data_dir + 'grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
+
+# map object and map parameters dict
+m = pickle.load(open(map_cache_dir + 'oklahoma_basemap.pickle'))
+p = pickle.load(open(map_cache_dir + 'map_params.pickle'))
+
+# colormap
+cmap = pickle.load(open(map_cache_dir + 'cmap.pickle'))
+
+## load dynamic data sources
+from pandas import read_csv
+
+# soil moisture data
+sm_fname = '%s_%02dcm_%s.csv' % (map_var, depth, date_str)
+sm_df = read_csv(input_kriging_data_dir + sm_fname, index_col=0)
+
+# get the RMSE from cross-validation
+rmse = float(open(input_rmse_data_dir + 'rmse_%dcm_%s.csv' % (depth, date_str)).read().rstrip())
 
 ### Computation
 
-## Combine data frames, drop NaNs, and sort by id
+## Combine data frames, drop NaNs, and sort by index ('id')
 df = df.join(sm_df).dropna().sort_index()
 
 ## Create patch collection if necessary
-from matplotlib.collections import PatchCollection
 from os.path import exists
 from hashlib import md5
 
-# hash the grid ids to generate a unique filename for PatchCollection
+# hash the grid ids to generate a unique filename for each matching index
 id_hash = md5(df.index.values).hexdigest()
 pc_fname = map_cache_dir + '800m_pixels_%s.pickle' % (id_hash)
 
 if exists(pc_fname): # if that filename exists, load the file
     pc = pickle.load(open(pc_fname)) # patches object
 
-else: # otherwise build a new patch collection
+else: # otherwise build a new patch collection (this takes a lot of RAM/time)
 
     # put the grid in map coordinates
     df['x'], df['y'] = (df['x'] + p['offset']['x'], df['y'] + p['offset']['y'])
 
     # create the rectangle patches
     from matplotlib.patches import Rectangle
+
+    # Rectangle() has its lower left corner at (x, y),
+    # but each (x, y) grid point in the DataFrame is defined at its center,
+    # so generate xy pairs by shifting down and left by (dx/2, dy/2)
     xy_pairs = zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.)
     patches = [Rectangle(xy, width=p['dx'], height=p['dy']) for xy in xy_pairs]
 
-    # build PatchCollection from remaining patches
+    # build PatchCollection from the patches
+    from matplotlib.collections import PatchCollection
     pc = PatchCollection(patches, edgecolor='None')
-    patches = None # clear memory
-    pickle.dump(pc, open(pc_fname, 'w')) # save PatchCollection
+    patches = None # patches is huge in RAM, so clear it ASAP
+    pickle.dump(pc, open(pc_fname, 'w')) # cache PatchCollection so it can be reused
 
 # give soil moisture data to the PatchCollection
 pc.set_array(df[map_var].values)
 
 # Color patch collection based on soil moisture
 pc.set_cmap(cmap) # set color map
-if(map_vars[map_var]['ticks']):
-
-    # set color map limits
+if 'ticks' in map_vars[map_var].keys(): # set color map limits based on min/max tick values
     pc.set_clim([min(map_vars[map_var]['ticks']),
                 max(map_vars[map_var]['ticks'])])
-
-    #if(map_var == 'MP'):
-    #    pc.set_norm(NegLogNorm(vmin = min(map_vars[map_var]['ticks']), vmax = max(map_vars[map_var]['ticks'])))
-
 
 ## Plot the data on the map
 import matplotlib.pyplot as plt
 
 # Create the figure
-size = (w/dpi, h/dpi)
+size = (w/dpi, h/dpi) # convert to from pixels to inches
 fig = plt.figure(1, size, dpi=dpi)
 
-# Get the current axes and add the soil moisture collection
-ax = fig.add_axes([0, 0, 1, 1])
+# Create axes and add the soil moisture collection
+ax = fig.add_axes([0, 0, 1, 1]) # fill the whole figure
 ax.add_collection(pc)
 
 # Use Oklahoma counties and state shapefile for plot background
@@ -144,27 +145,27 @@ m.readshapefile(input_shapefile_dir + '%s/%s' % (state_name, state_name),
                 state_name, linewidth=2)
 
 # Initialize the map
-m.drawmapboundary(linewidth=0)
+m.drawmapboundary(linewidth=0) # no border
 
 # Add the colorbar
-cbax = fig.add_axes([0.16, 0.32, 0.1, 0.42])
-cbax.set_axis_off()
+cbax = fig.add_axes([0.16, 0.32, 0.1, 0.42]) # place it underneath the OK Panhandle
+cbax.set_axis_off() # turn off axis ticks
 cb = fig.colorbar(pc, ax = cbax, fraction = 1, aspect = 8,
                   label = map_vars[map_var]['units'], spacing = 'proportional')
-if(map_vars[map_var]['ticks']):
+if 'ticks' in map_vars[map_var].keys(): # add colorbar ticks
     cb.set_ticks(map_vars[map_var]['ticks'])
 
 # Add text info
-(llx, lly) = m(p['left'], p['bottom'])
-(lrx, lry) = m(p['right'], p['bottom'])
+(llx, lly) = m(p['left'], p['bottom'])  # get the lower left and lower right
+(lrx, lry) = m(p['right'], p['bottom']) # corners in plot coordinates
 ax.text(llx, lly, '%d-cm %s' % (depth, map_vars[map_var]['name']),
         size = 20, family = 'sans-serif', ha = 'left', va = 'bottom')
 ax.text(lrx, lry, 'valid %s CST' % (date.strftime('%-I:%M %p %B %-d, %Y')),
         size = 11, family = 'sans-serif', ha = 'right', va = 'bottom')
 
-# RMSE
-(rlat, rlon) = (35.35, -102.35)
-(rx, ry) = m(rlon, rlat)
+# Add the cross-validation RMSE
+(rlat, rlon) = (35.35, -102.35) # place it under the colorbar
+(rx, ry) = m(rlon, rlat) # get plot coordinates
 ax.text(rx, ry, 'Cross-validation RMSE:\n%.3f %s' % (rmse, map_vars[map_var]['units']),
         size = 8, family = 'sans-serif', ha = 'center', va = 'center')
 

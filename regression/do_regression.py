@@ -14,7 +14,7 @@ output_data_dir = '../dynamic_data/'
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
 # load static (pickled) data sources
-import pickle
+import cPickle as pickle
 
 meso_df = pickle.load(open(input_static_data_dir + 
                            'mesonet/mesonet_geoinfo_ssurgo_stageiv.pickle'))
@@ -48,7 +48,7 @@ df = meso_df.join(texture_df, on='mukey')\
 
 import statsmodels.formula.api as smf
 
-# store regression results in dictionary
+# store regression results in a dictionary
 results = {}
 
 # do the fitting for each depth

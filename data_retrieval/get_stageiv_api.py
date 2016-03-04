@@ -6,12 +6,12 @@ from netCDF4 import MFDataset
 from pandas import DataFrame
 from os.path import isfile
 
-api_params = {
+api_params = { # parameters for the Antecedent Precipitation Index
     05: {'days': 24, 'k': 1.025},
     25: {'days': 24, 'k': 1.006},
     60: {'days': 22, 'k': 0.993}
 }
-nd = 24
+nd = 24 # number of days to download data for (max of API days params)
 
 date_in = argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
@@ -51,7 +51,7 @@ for t in nc_times:
         urlretrieve(url % (t.year, t.month, t.day, t_str), nc_file)
     nc_files.append(nc_file)
 
-# load the files and pull the precip data
+# load the files, stitch along timestamp, and pull the precip data
 nc = MFDataset(nc_files, aggdim='time')
 precip = nc.variables['Total_precipitation'][:]
 nc.close()
