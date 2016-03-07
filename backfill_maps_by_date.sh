@@ -1,8 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# set directory paths
-homedir=/home/OSU/jcpatto/automated_soil_moisture_mapping
-precipdir=../hourly_stageiv_precip_netcdf
+# get current directory
+basedir=$(dirname "$(readlink -f "$0")")
+
+# set path for Matlab
+export PATH=$PATH:/usr/bin:/usr/local/MATLAB/R2015a/bin/
+
+# set path for GNU parallel
+export PATH=$PATH:$HOME/local/bin
 
 # check if number of days are set
 if [[ $# -ne 2 ]]; then
@@ -10,24 +15,19 @@ if [[ $# -ne 2 ]]; then
     exit 1
 fi
 
-# change into directory
-cd $homedir
-
-# activate virtual environment
-source ./venv/bin/activate
-
-# set path for Matlab
-export PATH=$PATH:/usr/bin:/usr/local/MATLAB/R2015a/bin/
-
-# set path for parallel
-export PATH=$PATH:$HOME/local/bin
-
 # get the number of days to loop over
 endDay=$1
 days=$2
 
-# set the variable
+# set soil moisture variables (may be set on commandline in future)
 mapvar="vwc"
+depths="5 25 60"
+
+# change into directory
+cd $basedir
+
+# activate virtual environment
+source ./venv/bin/activate
 
 # loop over days
 for d in `seq 0 $days`; do
@@ -37,7 +37,7 @@ for d in `seq 0 $days`; do
     echo "--- `date --rfc-3339=seconds` ---"
     echo "Mapping for $date (day ${d}/${days})..."
     
-    # load data
+    # get data
     cd data_retrieval
     echo "  Getting Mesonet soil moisture data for ${date}..."
     python get_soil_moisture_data.py $date
@@ -51,16 +51,19 @@ for d in `seq 0 $days`; do
     python do_regression.py $date
     cd ..
 
+    # do kriging and plotting
     echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
-    parallel --jobs 3 --delay 15 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
+    parallel --jobs 3 --delay 15 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: $depths
 
+    # upload data to postgres
     echo "  Uploading data to soil_moisture_data_table"
     cd database_scripts
-    for depth in 5 25 60; do
+    for depth in $depths; do
 	bash upload_soil_moisture_data_to_sql.sh $date $mapvar $depth
     done
     cd ..
 
+    # after every 5th iteration, "optimize" the data table
     if [ $(($d % 5)) -eq 4 ]; then
 	echo "  Optimizing soil_moisture_data table..."
 	psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data;"
@@ -70,29 +73,13 @@ for d in `seq 0 $days`; do
 
 done
 
+# "optimize" the data table
 echo "Optimizing soil_moisture_data table..."
 psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data;"
 psql soilmapnik -b -c "REINDEX TABLE soil_moisture_data;"
 
-# copy maps to servers
-#cd server_functions
-#echo "Copying maps to server..."
-#bash copy_map_to_server.sh
-#echo "  Done."
-#cd ..
-
-# cleanup StageIV NetCDF data
-echo "Cleaning up old StageIV NetCDF data..."
-cd $precipdir
-
-# give files modification dates based on their filenames
-for f in `find . -iname "*.nc"`; do
-    touch -d "`date -d \"${f:2:4}-${f:6:2}-${f:8:2} ${f:10:2}:00 UTC\"`" $f
-done
-
-# remove files older than 25 days
-#find . -mtime 25 -exec rm {} \;
 echo "  Done."
 
-cd $homedir
+# cleanup
+cd $basedir
 deactivate

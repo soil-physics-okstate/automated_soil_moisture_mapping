@@ -1,20 +1,15 @@
-### Make sure matplotlib will not need interactive mode
-from matplotlib import use
-use('agg')
-
 ### Parameters
 
 ## Command-line
-from sys import argv
-
-map_var = 'vwc' # variable to plot (this will become a command-line variable in the future)
+from sys import argv, exit
+if len(argv) != 3: exit('Usage: plot_soil_moisture_map.py <date yyyy-mm-dd> <depth [cm]>')
 date_in = argv[1] # current date passed in as yyyy-mm-dd
 depth = int(argv[2]) # [cm]
+map_var = 'vwc' # variable to plot (this will become a command-line variable in the future)
 
 ## Plot options
-
 (w, h) = (1280, 720) # width, height [px]
-dpi = 150. # [px/in]
+dpi = 150 # [px/in]
 
 ## Soil moisture variable definitions
 map_vars = {
@@ -42,7 +37,7 @@ map_vars = {
 
 ### Data
 
-# get the data directories
+# set the data directories
 input_static_data_dir = '../static_data/'
 input_kriging_data_dir = '../output/kriging_result/'
 input_rmse_data_dir = '../output/kriging_cross_validation/'
@@ -52,7 +47,6 @@ output_dir = '../output/'
 
 # get the date string
 from datetime import datetime
-
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
@@ -81,26 +75,30 @@ rmse = float(open(input_rmse_data_dir + 'rmse_%dcm_%s.csv' % (depth, date_str)).
 
 ### Computation
 
-## Combine data frames, drop NaNs, and sort by index ('id')
+## Combine data, drop NaNs, and sort by index ('id')
 df = df.join(sm_df).dropna().sort_index()
 
-## Create patch collection if necessary
+## Open (or create, if necessary) the PatchCollection
 from os.path import exists
 from hashlib import md5
 
-# hash the grid ids to generate a unique filename for each matching index
+# hash the sorted grid ids to generate a filename for each unique set of ids
 id_hash = md5(df.index.values).hexdigest()
 pc_fname = map_cache_dir + '800m_pixels_%s.pickle' % (id_hash)
 
-if exists(pc_fname): # if that filename exists, load the file
-    pc = pickle.load(open(pc_fname)) # patches object
+if exists(pc_fname): # if that filename exists, load the PatchCollection
+    pc = pickle.load(open(pc_fname)) # Caution: about 2.5 GB in RAM!
 
-else: # otherwise build a new patch collection (this takes a lot of RAM/time)
+else: # otherwise build a new PatchCollection
+
+    # This takes a long time (about 1.25 minutes)
+    # and takes a lot of RAM (about 4.5 GB)
+    # which is why we prefer to load PatchCollection from disk.
 
     # put the grid in map coordinates
     df['x'], df['y'] = (df['x'] + p['offset']['x'], df['y'] + p['offset']['y'])
 
-    # create the rectangle patches
+    # create the individual Patches
     from matplotlib.patches import Rectangle
 
     # Rectangle() has its lower left corner at (x, y),
@@ -109,33 +107,36 @@ else: # otherwise build a new patch collection (this takes a lot of RAM/time)
     xy_pairs = zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.)
     patches = [Rectangle(xy, width=p['dx'], height=p['dy']) for xy in xy_pairs]
 
-    # build PatchCollection from the patches
+    # build PatchCollection from the Patches
     from matplotlib.collections import PatchCollection
     pc = PatchCollection(patches, edgecolor='None')
-    patches = None # patches is huge in RAM, so clear it ASAP
+    patches = None # patches is huge (~2 GB!), so clear it from RAM ASAP
     pickle.dump(pc, open(pc_fname, 'w')) # cache PatchCollection so it can be reused
 
 # give soil moisture data to the PatchCollection
 pc.set_array(df[map_var].values)
 
-# Color patch collection based on soil moisture
+# color the PatchCollection based on soil moisture
 pc.set_cmap(cmap) # set color map
 if 'ticks' in map_vars[map_var].keys(): # set color map limits based on min/max tick values
     pc.set_clim([min(map_vars[map_var]['ticks']),
                 max(map_vars[map_var]['ticks'])])
 
-## Plot the data on the map
+## Plot the map
+from matplotlib import use
+use('agg') # prevent matplotlib from using interactive mode
+
 import matplotlib.pyplot as plt
 
-# Create the figure
-size = (w/dpi, h/dpi) # convert to from pixels to inches
+# create the figure
+size = (w/float(dpi), h/float(dpi)) # convert to from pixels to inches
 fig = plt.figure(1, size, dpi=dpi)
 
-# Create axes and add the soil moisture collection
+# create axes and add the PatchCollection
 ax = fig.add_axes([0, 0, 1, 1]) # fill the whole figure
 ax.add_collection(pc)
 
-# Use Oklahoma counties and state shapefile for plot background
+# plot Oklahoma counties and state outlines from shapefiles
 county_name = 'tl_2014_oklahoma_county'
 state_name = 'tl_2014_oklahoma_state'
 
@@ -144,10 +145,10 @@ m.readshapefile(input_shapefile_dir + '%s/%s' % (county_name, county_name),
 m.readshapefile(input_shapefile_dir + '%s/%s' % (state_name, state_name),
                 state_name, linewidth=2)
 
-# Initialize the map
+# fill the rest of the map background
 m.drawmapboundary(linewidth=0) # no border
 
-# Add the colorbar
+# add the colorbar
 cbax = fig.add_axes([0.16, 0.32, 0.1, 0.42]) # place it underneath the OK Panhandle
 cbax.set_axis_off() # turn off axis ticks
 cb = fig.colorbar(pc, ax = cbax, fraction = 1, aspect = 8,
@@ -155,7 +156,7 @@ cb = fig.colorbar(pc, ax = cbax, fraction = 1, aspect = 8,
 if 'ticks' in map_vars[map_var].keys(): # add colorbar ticks
     cb.set_ticks(map_vars[map_var]['ticks'])
 
-# Add text info
+# add text info
 (llx, lly) = m(p['left'], p['bottom'])  # get the lower left and lower right
 (lrx, lry) = m(p['right'], p['bottom']) # corners in plot coordinates
 ax.text(llx, lly, '%d-cm %s' % (depth, map_vars[map_var]['name']),
@@ -163,13 +164,13 @@ ax.text(llx, lly, '%d-cm %s' % (depth, map_vars[map_var]['name']),
 ax.text(lrx, lry, 'valid %s CST' % (date.strftime('%-I:%M %p %B %-d, %Y')),
         size = 11, family = 'sans-serif', ha = 'right', va = 'bottom')
 
-# Add the cross-validation RMSE
+# add the cross-validation RMSE
 (rlat, rlon) = (35.35, -102.35) # place it under the colorbar
 (rx, ry) = m(rlon, rlat) # get plot coordinates
 ax.text(rx, ry, 'Cross-validation RMSE:\n%.3f %s' % (rmse, map_vars[map_var]['units']),
         size = 8, family = 'sans-serif', ha = 'center', va = 'center')
 
-# Save the map
+# save the map
 fig.savefig(output_dir +
             'maps/oksmm_%sV2_%02dcm_%s.png' % (map_var, depth, date_in),
             dpi=dpi)
