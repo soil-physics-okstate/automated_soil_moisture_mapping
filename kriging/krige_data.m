@@ -31,7 +31,7 @@ function [krigResult] = krige_data(map_date_str,depth)
   resid_data = readtable(strcat(resid_data_dir, 'resid_', map_date_str, '.csv'));
 
   %% Step 3: Create empirical semivariogram for three depths
-  [d,V,N] = empvario(resid_data,depth);
+  [d,V,N] = empvario(map_date_str,resid_data,depth);
 
   %% Step 4: Fit theoretical semivariogram model
   [model,param] = semivarfit2(d,V,N,map_date_str,depth); 
