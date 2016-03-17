@@ -51,6 +51,15 @@ function [model,param]=semivarfit2(d,V,N,map_date_str,depth)
     title(modelnames{i});
     hold off
   end
-  print(strcat('../output/semivariogram/semivariogram_',depth,'cm_', map_date_str), '-dpng');
+  print(strcat('../output/semivariogram/plots/semivariogram_',depth,'cm_', map_date_str), '-dpng');
+
+  % save model data
+  dirOut = '../output/semivariogram/model/';
+  fileName = strcat(dirOut, 'model_', depth, 'cm_', map_date_str, '.csv');
+  fileOut = fopen(fileName, 'w');
+  fprintf(fileOut, '%s\n', model);
+  fclose(fileOut);
+
+  dlmwrite(fileName, param, 'precision', '%g', '-append');
 
 end

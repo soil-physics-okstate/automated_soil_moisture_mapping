@@ -36,7 +36,7 @@ function [d,V,N] = empvario(map_date_str,resid_data,depth)
   % save variogram data
   dirOut = '../output/semivariogram/data/';
   fileName = strcat(dirOut, 'semivariogram_', depth, 'cm_', map_date_str, '.csv');
-  columnHeaders = {'h', 'gamma', 'n'}
+  columnHeaders = {'h', 'gamma', 'n'};
 
   fileOut = fopen(fileName, 'w');
   fprintf(fileOut, '%s,', columnHeaders{1:end-1});% Append file with column headers
