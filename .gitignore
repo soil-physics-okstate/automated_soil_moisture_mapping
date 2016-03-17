@@ -19,6 +19,7 @@ venv/*
 *.nc
 
 dynamic_data/*
+output
 output/*
 database_scripts/temp_query/*
 
