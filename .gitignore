@@ -22,6 +22,7 @@ dynamic_data/*
 output
 output/*
 database_scripts/temp_query/*
+server_functions/*
 
 *log.txt
 *.log
