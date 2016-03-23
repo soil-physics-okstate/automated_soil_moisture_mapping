@@ -12,6 +12,13 @@ date=$1
 depth=$2
 mapvar="vwc"
 
+# set path for Matlab
+export PATH=$PATH:/usr/bin:/usr/local/MATLAB/R2015a/bin/
+
+# set path for parallel
+export PATH=$PATH:$HOME/local/bin
+
+
 # do kriging and create CSV
 cd kriging
 matlab -nodisplay -nodesktop -r "krige_data('$date', '$depth'); exit;" &> log/kriging_${date}_${depth}cm.log
@@ -21,10 +28,11 @@ cd ..
 
 # do plotting
 cd plotting
-python plot_soil_moisture_map.py $date $depth &> log/plotting_${date}_${depth}cm.log
+#python plot_soil_moisture_map.py $date $depth &> log/plotting_${date}_${depth}cm.log
 python plot_api_map.py $date $depth &>> log/plotting_${date}_${depth}cm.log
 python plot_kriging_residuals_map.py $date $depth &>> log/plotting_${date}_${depth}cm.log
 python plot_regression_stats.py $date $depth &>> log/plotting_${date}_${depth}cm.log
+python plot_variogram_model.py $date $depth &>> log/plotting_${date}_${depth}cm.log
 
 cd ..
 
