@@ -51,7 +51,7 @@ for d in `seq 0 $days`; do
     cd ..
 
     echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
-    parallel --jobs 3 --delay 15 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
+    parallel --jobs 3 --timeout 5000 "bash krige_plot_parallel.sh $date {1}" ::: 5 25 60
 
     echo "  Uploading data to soil_moisture_data_table"
     cd database_scripts
@@ -70,27 +70,12 @@ for d in `seq 0 $days`; do
 done
 
 echo "Optimizing soil_moisture_data table..."
+echo `date`
 psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data;"
+echo `date`
 psql soilmapnik -b -c "REINDEX TABLE soil_moisture_data;"
+echo `date`
 
-# copy maps to servers
-#cd server_functions
-#echo "Copying maps to server..."
-#bash copy_map_to_server.sh
-#echo "  Done."
-#cd ..
-
-# cleanup StageIV NetCDF data
-echo "Cleaning up old StageIV NetCDF data..."
-cd $precipdir
-
-# give files modification dates based on their filenames
-for f in `find . -iname "*.nc"`; do
-    touch -d "`date -d \"${f:2:4}-${f:6:2}-${f:8:2} ${f:10:2}:00 UTC\"`" $f
-done
-
-# remove files older than 25 days
-#find . -mtime 25 -exec rm {} \;
 echo "  Done."
 
 cd $homedir

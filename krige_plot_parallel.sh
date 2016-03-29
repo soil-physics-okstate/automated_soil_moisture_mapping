@@ -12,17 +12,10 @@ date=$1
 depth=$2
 mapvar="vwc"
 
-# set path for Matlab
-export PATH=$PATH:/usr/bin:/usr/local/MATLAB/R2015a/bin/
-
-# set path for parallel
-export PATH=$PATH:$HOME/local/bin
-
-
 # do kriging and create CSV
 cd kriging
-matlab -nodisplay -nodesktop -r "krige_data('$date', '$depth'); exit;" &> log/kriging_${date}_${depth}cm.log
-python create_outputs.py $date $depth &> log/outputting_${date}_${depth}cm.log
+matlab -nodisplay -nodesktop -singleCompThread -r "krige_data('$date', '$depth'); exit;" &> log/kriging_${date}_${depth}cm.log
+python create_outputs.py $date $depth &>> log/kriging_${date}_${depth}cm.log
 
 cd ..
 
