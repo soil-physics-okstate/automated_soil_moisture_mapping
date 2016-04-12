@@ -18,8 +18,8 @@ import cPickle as pickle
 
 meso_df = pickle.load(open(input_static_data_dir + 
                            'mesonet/mesonet_geoinfo_ssurgo_stageiv.pickle'))
-texture_df = pickle.load(open(input_static_data_dir + 
-                              'soil_properties/ssurgo/ssurgo_texture_by_mukey.pickle'))
+soil_df = pickle.load(open(input_static_data_dir + 
+                              'soil_properties/ssurgo/ssurgo_soil_properties_by_mukey.pickle'))
 
 # load dynamic (CSV) data sources
 from pandas import read_csv
@@ -30,15 +30,15 @@ sm_file = input_dynamic_data_dir + 'soil_moisture/06Z/sm_data_%s.csv' % (date_st
 api_df = read_csv(api_file, index_col=[0,1])
 sm_df = read_csv(sm_file, header=[0,1], index_col=0)
 
-# give the texture, api, and sm DataFrame column names
+# give the soil, api, and sm DataFrame column names
 # that can be used in OLS formulae
-texture_df.columns = ['%s_%d' % (col) for col in texture_df.columns.values]
+soil_df.columns = ['%s_%d' % (col) for col in soil_df.columns.values]
 api_df.columns = ['api_%s' % (col) for col in api_df.columns.values]
 sm_df.columns = ['%s_%s' % (col) for col in sm_df.columns.values]
 
 # combine everything into one DataFrame
 from pandas import to_numeric
-df = meso_df.join(texture_df, on='mukey')\
+df = meso_df.join(soil_df, on='mukey')\
             .join(api_df, on=['s4x', 's4y'])\
             .join(sm_df)\
             .apply(to_numeric)

@@ -15,19 +15,19 @@ ticks = np.arange(0, 100.1, 20)
 
 import cPickle as pickle
 
-input_data_dir = '../../../static_data/'
-map_cache_dir = '../../../plotting/map_cache/'
-input_shapefile_dir = '../../../gis_setup/state_county_shapefiles/'
+input_data_dir = '../static_data/'
+map_cache_dir = 'map_cache/'
+input_shapefile_dir = '../gis_setup/state_county_shapefiles/'
 
 grid_df = pickle.load(open(input_data_dir +
                            'grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
-texture_df = pickle.load(open(input_data_dir +
-                              'soil_properties/ssurgo/ssurgo_texture_by_mukey.pickle'))
+soil_df = pickle.load(open(input_data_dir +
+                              'soil_properties/ssurgo/ssurgo_soil_properties_by_mukey.pickle'))
 
 m = pickle.load(open(map_cache_dir + 'oklahoma_basemap.pickle'))
 p = pickle.load(open(map_cache_dir + 'map_params.pickle'))
 
-df = grid_df.join(texture_df, on='mukey').sort_index()
+df = grid_df.join(soil_df, on='mukey').sort_index()
 df['x'], df['y'] = (df['x'] + p['offset']['x'], df['y'] + p['offset']['y'])
 
 import matplotlib.pyplot as plt

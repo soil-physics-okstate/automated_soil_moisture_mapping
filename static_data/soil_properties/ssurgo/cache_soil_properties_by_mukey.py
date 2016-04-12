@@ -19,9 +19,14 @@ from pandas import DataFrame, MultiIndex, concat
 import numpy as np
 
 index = MultiIndex.from_product([mukeys, depths])
-df = DataFrame(columns = ['sand', 'silt', 'clay'], index=index)
+columns = ['sand', 'silt', 'clay', 
+           'fc', 'pwp', 'porosity',
+           'Ks']
+df = DataFrame(columns = columns, index=index)
 
-for mukey in mukeys:
+columns = ['cokey', 'hztop', 'hzbot'] + columns
+for i,mukey in enumerate(mukeys):
+    print '%8d/%8d (%.2f%%)' % (i, len(mukeys), float(i)/len(mukeys)*100)
 
     # grab the cokeys and relative fractions from components table
     query = '''
@@ -43,7 +48,6 @@ for mukey in mukeys:
     # for each layer...
     for depth_i, (top, bottom) in enumerate(layers):
 
-        columns = ['cokey', 'hztop', 'hzbot', 'sand', 'silt', 'clay']
         layer_df = DataFrame()
         cokey_valid = []
         
@@ -53,7 +57,10 @@ for mukey in mukeys:
             # get the horizon depths and sand, silt, and clay contents 
             # that exist anywhere within the layer
             query = '''
-            SELECT cokey, hzdept_r, hzdepb_r, sandtotal_r, silttotal_r, claytotal_r 
+            SELECT cokey, hzdept_r, hzdepb_r, 
+            sandtotal_r, silttotal_r, claytotal_r, 
+            wthirdbar_r, wfifteenbar_r, wsatiated_r, 
+            ksat_h
             FROM chorizon 
             WHERE cokey = %s AND NOT (%s > hzdepb_r OR %s < hzdept_r);
             '''
@@ -69,8 +76,8 @@ for mukey in mukeys:
                 cokey_valid.append(False)
                 continue
             
-            # drop horizons with missing sand, silt, or clay values
-            comp_df = comp_df.dropna()
+            # drop horizons with missing sand or clay values
+            comp_df = comp_df.dropna(subset=['sand', 'clay'])
             if len(comp_df) == 0: # if no horizons are left, skip this component
                 cokey_valid.append(False)
                 continue
@@ -103,10 +110,15 @@ for mukey in mukeys:
         sand = np.around(sum(layer_df['sand'] * layer_df['fcomp'] * layer_df['flayer']), 1)
         clay = np.around(sum(layer_df['clay'] * layer_df['fcomp'] * layer_df['flayer']), 1)
         silt = np.around(100 - (sand + clay), 1)
-        
+        cols_out = [sand, silt, clay]
+
+        # compute the rest of the columns
+        for col in ['fc', 'pwp', 'porosity', 'Ks']:
+            cols_out.append(sum(layer_df[col] * layer_df['fcomp'] * layer_df['flayer']))
+
         # save data in DataFrame
-        df.loc[(mukey, depths[depth_i])] = (sand, silt, clay)
+        df.loc[(mukey, depths[depth_i])] = cols_out
 
 # set depths as a column index and save DataFrame
 df = df.unstack()
-df.to_pickle('ssurgo_texture_by_mukey.pickle')
+df.to_pickle('ssurgo_soil_properties_by_mukey.pickle')

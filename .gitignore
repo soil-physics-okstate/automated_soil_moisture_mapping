@@ -18,6 +18,7 @@ venv/*
 *.pickle
 *.nc
 
+dynamic_data
 dynamic_data/*
 output
 output/*

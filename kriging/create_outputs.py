@@ -24,8 +24,8 @@ import pickle
 input_static_data_dir = '../static_data/'
 grid_df = pickle.load(open(input_static_data_dir + 
                            'grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
-texture_df = pickle.load(open(input_static_data_dir + 
-                              'soil_properties/ssurgo/ssurgo_texture_by_mukey.pickle'))
+soil_df = pickle.load(open(input_static_data_dir + 
+                              'soil_properties/ssurgo/ssurgo_soil_properties_by_mukey.pickle'))
 
 # load dynamic data sources
 input_dynamic_data_dir = '../dynamic_data/'
@@ -42,13 +42,13 @@ from pandas import read_csv
 api_df = read_csv(api_file, index_col=[0,1])
 resid_df = read_csv(resid_file, index_col=[0,1])
 
-# give the texture, api, and sm DataFrame column names
+# give the soil, api, and sm DataFrame column names
 # that match the model results
-texture_df.columns = ['%s_%d' % (col) for col in texture_df.columns.values]
+soil_df.columns = ['%s_%d' % (col) for col in soil_df.columns.values]
 api_df.columns = ['api_%s' % (col) for col in api_df.columns.values]
 
 # combine and clean data
-df = grid_df.join(texture_df['sand_%d' % (depth)], on='mukey')\
+df = grid_df.join(soil_df['sand_%d' % (depth)], on='mukey')\
             .join(api_df['api_%d' % (depth)], on=['s4x', 's4y'])\
             .join(resid_df, on=['x', 'y'])
 df = df.sort_index() # sort by (x, y)
