@@ -1,8 +1,7 @@
-from sys import argv
+import sys
 from datetime import datetime, timedelta
 import numpy as np
 from urllib import urlretrieve
-from netCDF4 import MFDataset
 from pandas import DataFrame
 from os.path import isfile
 
@@ -13,7 +12,7 @@ api_params = { # parameters for the Antecedent Precipitation Index
 }
 nd = 24 # number of days to download data for (max of API days params)
 
-date_in = argv[1] # current date passed in as yyyy-mm-dd
+date_in = sys.argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 
 # 'date' is Current Date, 0000 UTC
@@ -22,6 +21,9 @@ date = date + timedelta(hours=6)
 
 url = 'http://www.mesonet.org/data/public/noaa/qpe/abrfc/1hr_netcdf/%04d/%02d/%02d/%s.nc'
 # url takes (year, month, day, t_str)
+
+# the netCDF files started using a different format on 2014-03-17 0000Z
+nc_switch = datetime(2014, 3, 17)
 
 # set data directories
 input_data_dir = '../static_data/'
@@ -52,9 +54,41 @@ for t in nc_times:
     nc_files.append(nc_file)
 
 # load the files, stitch along timestamp, and pull the precip data
-nc = MFDataset(nc_files, aggdim='time')
-precip = nc.variables['Total_precipitation'][:]
-nc.close()
+precips = []
+
+# the order matters, newer data should be opened first, so start with newer netCDF files
+
+if np.sum(nc_times >= nc_switch): # newer netCDF files can be aggregated
+    from netCDF4 import MFDataset
+    nc = MFDataset(np.array(nc_files)[nc_times >= nc_switch], aggdim='time')
+    precips.append(nc.variables['Total_precipitation'][:]) # already in [mm]
+    nc.close()
+
+if np.sum(nc_times < nc_switch): # older netCDF files must be opened one-by-one
+    from netCDF4 import Dataset
+    precips_old = []
+    for nc_file in np.array(nc_files)[nc_times < nc_switch]: # open one-by-one
+        nc = Dataset(nc_file)
+        
+        # there are two possible ways precip data are stored before nc_switch
+        # "amountofprecip"
+        if 'amountofprecip' in nc.variables:
+            precips_old.append(nc.variables['amountofprecip'][:]/100.) # convert to [mm], append
+
+        # or "Total_precipitation" (like new netCDF files)
+        elif 'Total_precipitation' in nc.variables:
+            precips_old.append(nc.variables['Total_precipitation'][:][0]) # take first axis, append
+
+        # if neither of those are found, exit
+        else:
+            print 'Could not find precipitation data in %s' % (nc_file)
+            sys.exit(1)
+
+        nc.close()
+
+    precips.append(np.stack(precips_old)) # combine along new axis
+
+precip = np.concatenate(precips) # combine new and old (works even if len(precips) == 1)
 
 # accumulate daily precip
 daily_precip = precip.reshape((24, nd, 159, 335)).sum(axis=0)
