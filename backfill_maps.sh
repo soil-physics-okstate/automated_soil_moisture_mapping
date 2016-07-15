@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set directory paths
-homedir=/opt/mapnik/automated_soil_moisture_mapping
+homedir=/opt/soilmapnik/automated_soil_moisture_mapping
 precipdir=../hourly_stageiv_precip_netcdf
 
 # check if number of days are set
@@ -20,7 +20,7 @@ source ./venv/bin/activate
 export PATH=$PATH:/usr/bin:/usr/local/MATLAB/R2015a/bin/
 
 # set path for parallel
-export PATH=$PATH:$HOME/local/bin
+export PATH=$PATH:/opt/soilmapnik/local/bin
 
 # get the number of days to loop over
 days=$1
