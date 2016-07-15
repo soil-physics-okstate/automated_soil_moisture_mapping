@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set directory paths
-homedir=/home/OSU/jcpatto/automated_soil_moisture_mapping
+homedir=/opt/mapnik/automated_soil_moisture_mapping
 precipdir=../hourly_stageiv_precip_netcdf
 
 # check if number of days are set

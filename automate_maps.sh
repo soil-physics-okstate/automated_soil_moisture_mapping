@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set directory paths
-homedir=/home/OSU/jcpatto/automated_soil_moisture_mapping
+homedir=/opt/soilmapnik/automated_soil_moisture_mapping
 cd $homedir
 
 # run backfill for only a single day

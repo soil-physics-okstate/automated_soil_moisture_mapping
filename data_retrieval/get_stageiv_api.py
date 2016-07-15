@@ -30,7 +30,7 @@ input_data_dir = '../static_data/'
 output_data_dir = '../dynamic_data/'
 
 # location to store NetCDF files temporarily
-nc_dir = '/home/OSU/jcpatto/hourly_stageiv_precip_netcdf/'
+nc_dir = '/opt/soilmapnik/hourly_stageiv_precip_netcdf/'
 
 # NetCDF files' valid times include precip summed over the previous hour
 # so data collection should stop at 0500 UTC
