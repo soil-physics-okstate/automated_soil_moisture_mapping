@@ -21,6 +21,7 @@ datatable=temp_soil_moisture_data_${map_var}_${depth}cm
 
 # set output file
 outfile=../output/raster_maps/raster_${date}_${map_var}_${depth}cm.tif
+outfile_unreprojected=../output/raw_rasters/${date}_${map_var}_${depth}cm.tif
 
 # build query
 query="SELECT geom_point AS geom, value \
@@ -35,6 +36,10 @@ ogr2ogr -f "ESRI Shapefile" $tmpbase.shp PG:"dbname=$dbname" -sql "$query"
 
 # make raster
 gdal_rasterize -a value -tr 800 800 -a_nodata -999 -ot Float32 $tmpbase.shp $tmpbase.tif
+
+# save un-reprojected raster
+rm ${outfile_unprojected}
+cp ${tmpbase}.tif ${outfile_unreprojected}
 
 # reproject raster
 rm $outfile
