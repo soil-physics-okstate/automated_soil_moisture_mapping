@@ -29,6 +29,9 @@ cd $basedir
 # activate virtual environment
 source ./venv/bin/activate
 
+# array to collect months where we'll need to (re)build netCDF files
+months=()
+
 # loop over days
 for d in `seq 0 $days`; do
 
@@ -36,6 +39,9 @@ for d in `seq 0 $days`; do
     date=`date -d "$endDay - $d days" +"%Y-%m-%d"`
     echo "--- `date --rfc-3339=seconds` ---"
     echo "Mapping for $date (day ${d}/${days})..."
+
+    # add the month to the months array if it isn't already in there
+    [[ ! ${months[@]} =~ ${date:0:7} ]] && months+=(${date:0:7})
     
     # get data
     cd data_retrieval
@@ -72,6 +78,13 @@ for d in `seq 0 $days`; do
     echo "  Done."
 
 done
+
+# (re)write netcdf file for every month where at least one day was processed
+cd netcdf_export
+for month in ${months[@]}; do
+    bash monthly_netcdf.sh ${month}
+done
+cd ..
 
 # "optimize" the data table
 echo "Optimizing soil_moisture_data table..."
