@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-cd /home/OSU/jcpatto/automated_soil_moisture_mapping/validation_runs/
+# get current directory
+basedir=$(dirname "$(readlink -f "$0")")
+
+# change into directory
+cd $basedir
 
 export PATH=$PATH:/usr/local/MATLAB/R2015a/bin/
 
