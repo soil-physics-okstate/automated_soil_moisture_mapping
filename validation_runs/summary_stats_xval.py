@@ -1,7 +1,11 @@
 from pandas import read_csv
 import numpy as np
 
-df = read_csv('output/xval_merged.csv', index_col=[0,1])
+#depth = 5
+#depth = 25
+depth = 60
+
+df = read_csv('output/xval_merged_%dcm.csv' %(depth), index_col=[0,1])
 
 def rmse(df, col):
     return np.sqrt(np.mean(df[col]**2))
