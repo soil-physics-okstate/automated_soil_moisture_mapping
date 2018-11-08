@@ -1,4 +1,6 @@
-depth = '5';
+%depth = '5';
+%depth = '25';
+depth = '60';
 dates = textread('dates', '%s', 'delimiter', '\n');
 
 parfor idate = 1:length(dates)

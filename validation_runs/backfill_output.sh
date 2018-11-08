@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-depth=5
-minstns=200
+#depth=5
+#depth=25
+depth=60
+#minstns=200
+minstns=80
 
 # get current directory
 basedir=$(dirname "$(readlink -f "$0")")
