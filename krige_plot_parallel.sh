@@ -34,3 +34,8 @@ cd rasterization
 bash rasterize_map.sh $date $mapvar $depth &> log/rasterize_${date}_${depth}cm.log
 
 cd ..
+
+# elinde -- 2016-11-01
+# compress kriging residuals
+bzip2 -f output/kriging_residual/kriged_${depth}cm_${date//-/}.csv
+

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /opt/mapnik/automated_soil_moisture_mapping
+cd /opt/soilmapnik/automated_soil_moisture_mapping
 
 startDate=$1
 endDate=$2
