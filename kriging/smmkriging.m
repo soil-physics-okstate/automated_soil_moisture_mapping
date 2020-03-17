@@ -7,6 +7,7 @@ function [krigResult]=smmkriging(grid,map_date_str,resid_data,depth,model,param)
 % 
 % Author: Matthew Haffner 7/3/2015
 % Updated: Jason Patton 2/10/2016
+% Updated: Tyson Ochsner 3/6/2020, modified to accommodate semivarfit3.m
 %
 %%%%% Contents %%%%%
 % 1. Set up input for kriging
@@ -18,9 +19,9 @@ function [krigResult]=smmkriging(grid,map_date_str,resid_data,depth,model,param)
 % grid = structure containing the x/y grid to krige on
 % map_date_str = the date string for the current map
 % resid_data = structure containing the data to krige
-% depth = soil depth [cm] that is being kriged
-% model = variogram model selected in semivarfit2.m
-% param = parameters calculated in semivarfit2.m
+% depth = string for the soil depth [cm] being kriged (5, 25, or 60)
+% model = variogram model selected in semivarfit3.m
+% param = parameters calculated in semivarfit3.m
 %
 %%%%% Outputs %%%%%
 % krigResult = nx4 double with kriging results;
@@ -52,23 +53,22 @@ function [krigResult]=smmkriging(grid,map_date_str,resid_data,depth,model,param)
   gridY = double(grid.y);
   pred = [gridX gridY]; % Grid x-y coordinates
 
-
-  beta = cell2mat(param(2)); % Variogram parameters (from Geano); may need to convert to 2x1 array
+  % set kriging parametes    
+  beta = param; % Variogram parameters (from semivarfit3.m); 
   maxpoints = 10; % Maximum number of observed locations to consider
   maxdist = 200000; % Maximum distance [m] between an unsampled location and an observed station
-  Gmodel = model; % Make notation conistent with krig.m function
+  Gmodel = model; % Variogram model, make notation conistent with krig.m function
   Kmodel = 'ordinary'; % Kriging method; 'ordinary' is default
-  nugget = 0.0000; % Nugget not currently in use due to poor results
 
   %% 2. Kriging
 
-  [Zpred,Vpred,x,y]=krig_in_parts(obs,pred,beta,maxpoints,maxdist,Gmodel,Kmodel,nugget);
+  [Zpred,Vpred,x,y]=krig_in_parts(obs,pred,beta,maxpoints,maxdist,Gmodel,Kmodel);
   krigResult = [x y Zpred Vpred];
 
   %% 3. Cross validation
 
   % Leave one out cross validation; produces RMSE
-  [RMSE,RMSEn,RMSEz]=crossvalidation(obs,beta,maxpoints,maxdist,Gmodel,Kmodel,nugget); 
+  [RMSE,RMSEn,RMSEz]=crossvalidation(obs,beta,maxpoints,maxdist,Gmodel,Kmodel); 
   dirOut = '../output/kriging_cross_validation/';
   fileName = strcat(dirOut,'rmse_',depth,'cm_',map_date_str,'.csv');
   fileOut = fopen(fileName, 'w');

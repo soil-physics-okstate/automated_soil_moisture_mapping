@@ -34,7 +34,7 @@ function [krigResult] = krige_data(map_date_str,depth)
   [d,V,N] = empvario(map_date_str,resid_data,depth);
 
   %% Step 4: Fit theoretical semivariogram model
-  [model,param] = semivarfit2(d,V,N,map_date_str,depth); 
+  [model,param] = semivarfit3(d,V,N,map_date_str,depth); 
 
   %% Step 5: Interpolate volumentric water content using kriging
   [krigResult]=smmkriging(grid,map_date_str,resid_data,depth,model,param);
