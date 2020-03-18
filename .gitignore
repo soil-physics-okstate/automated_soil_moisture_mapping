@@ -1,6 +1,7 @@
 venv/*
 
 *~
+*.swp
 
 *tl_2014*
 *gSSURGO*
