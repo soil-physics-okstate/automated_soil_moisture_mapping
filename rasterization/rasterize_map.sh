@@ -38,7 +38,7 @@ ogr2ogr -f "ESRI Shapefile" $tmpbase.shp PG:"dbname=$dbname" -sql "$query"
 gdal_rasterize -a value -tr 800 800 -a_nodata -999 -ot Float32 $tmpbase.shp $tmpbase.tif
 
 # save un-reprojected raster
-rm ${outfile_unprojected}
+rm ${outfile_unreprojected}
 cp ${tmpbase}.tif ${outfile_unreprojected}
 
 # reproject raster
