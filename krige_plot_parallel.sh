@@ -32,10 +32,16 @@ cd ..
 # create geotiff rasters
 cd rasterization
 bash rasterize_map.sh $date $mapvar $depth &> log/rasterize_${date}_${depth}cm.log
+bash rasterize_map.sh $date residual $depth &>> log/rasterize_${date}_${depth}cm.log
+bash rasterize_map.sh $date variance $depth &>> log/rasterize_${date}_${depth}cm.log
 
 cd ..
 
-# elinde -- 2016-11-01
-# compress kriging residuals
-bzip2 -f output/kriging_residual/kriged_${depth}cm_${date//-/}.csv
+# compress kriging residuals and kriging results
+date_f=${date//-/}
+depth_f=$(printf "%02d" ${depth})
+xz -f output/kriging_residual/kriged_${depth}cm_${date_f}.csv
+xz -f output/kriging_result/vwc_${depth_f}cm_${date_f}.csv
+xz -f output/kriging_result/residual_${depth_f}cm_${date_f}.csv
+xz -f output/kriging_result/variance_${depth_f}cm_${date_f}.csv
 

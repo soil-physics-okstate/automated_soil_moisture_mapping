@@ -64,3 +64,11 @@ df[map_var] = ( (model.params * df).sum(axis=1) # sum the model params * values
 cols = ['id','vwc']
 output_fname = '%s_%02dcm_%s.csv' % (map_var, depth, date_str)
 df[cols].to_csv(output_dir + 'kriging_result/' + output_fname, index=False)
+
+cols = ['id','Z']
+output_fname = '%s_%02dcm_%s.csv' % ('residual', depth, date_str)
+df[cols].to_csv(output_dir + 'kriging_result/' + output_fname, index=False)
+
+cols = ['id','Zvar']
+output_fname = '%s_%02dcm_%s.csv' % ('variance', depth, date_str)
+df[cols].to_csv(output_dir + 'kriging_result/' + output_fname, index=False)
