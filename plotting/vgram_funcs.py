@@ -8,5 +8,5 @@ def gaussV(h, nugget, sill, range):
 
 def spherV(h, nugget, sill, range):
     v = nugget + sill*((3./2.)*(h/range) - (1./2.)*(h/range)**3)
-    v[h > range] = sill
+    v[h > range] = nugget + sill
     return v
