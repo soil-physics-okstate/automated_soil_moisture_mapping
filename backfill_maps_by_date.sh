@@ -61,35 +61,17 @@ for d in `seq 0 $days`; do
     echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
     parallel --jobs 3 --delay 15 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: $depths
 
-    # upload data to postgres
-    echo "  Uploading data to soil_moisture_data_table"
-    cd database_scripts
-    for depth in $depths; do
-	bash upload_soil_moisture_data_to_sql.sh $date $mapvar $depth
-    done
-    cd ..
-
-    # after every 5th iteration, "optimize" the data table
-    if [ $(($d % 5)) -eq 4 ]; then
-	echo "  Optimizing soil_moisture_data table..."
-	psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data;"
-    fi
-
     echo "  Done."
 
 done
 
 # (re)write netcdf file for every month where at least one day was processed
 cd netcdf_export
+echo "Months: ${months[@]}"
 for month in ${months[@]}; do
     bash monthly_netcdf.sh ${month}
 done
 cd ..
-
-# "optimize" the data table
-echo "Optimizing soil_moisture_data table..."
-psql soilmapnik -b -c "VACUUM ANALYZE soil_moisture_data;"
-psql soilmapnik -b -c "REINDEX TABLE soil_moisture_data;"
 
 echo "  Done."
 
