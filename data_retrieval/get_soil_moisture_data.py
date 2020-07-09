@@ -34,7 +34,7 @@ tr_df.columns = [['TR', 'TR', 'TR'], [5, 25, 60]]
 df = df.join(tr_df)
 
 # compute matric potential
-MP_df = -0.717 * np.exp(1.788*df['TR'])
+MP_df = -2083 / (1 + np.exp(-3.35 * (df['TR'] - 3.17)))
 
 # compute volumetric water content
 vwc_df = df['theta_r'] + (df['theta_s'] - df['theta_r']) / (1 + (-df['alpha']*MP_df)**df['n'])**(1 - 1./df['n'])
