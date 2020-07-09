@@ -21,7 +21,7 @@ input_data_dir = '../static_data/'
 output_data_dir = '../dynamic_data/'
 
 # load the MesoSoil data
-df = pickle.load(open(input_data_dir + 'soil_properties/meso_soil/MesoSoilv1_3.pickle'))
+df = pickle.load(open(input_data_dir + 'soil_properties/meso_soil/MesoSoilv2_0.pickle'))
 
 # load the Mesonet sensor temperature rise data
 tr_df = read_csv(url % (date.year, date.month, date.day, date_str),

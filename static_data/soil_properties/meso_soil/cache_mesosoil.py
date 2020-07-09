@@ -1,7 +1,7 @@
 from pandas import read_excel
 
 # input file
-fname = 'MesoSoilv1_3.xlsx'
+fname = 'MesoSoilv2_0.xlsx'
 
 # skip the first row (describes file) and third row (describes units)
 # and turn missing data (-9.9) into NaNs
