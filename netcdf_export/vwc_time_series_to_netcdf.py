@@ -53,7 +53,7 @@ version_dois = {
     # DOIs issued for specific versions of the code
     '1.0.0':'10.5281/zenodo.3717922',
     '1.1.0':'10.5281/zenodo.3875685',
-    '1.2.0':'',
+    '1.2.0':'10.5281/zenodo.3945534',
 }
 
 
