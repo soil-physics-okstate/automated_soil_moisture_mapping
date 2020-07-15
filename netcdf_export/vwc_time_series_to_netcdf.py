@@ -42,15 +42,18 @@ version_references = {
     # References - don't include DOIs for specific code releases
     '1.0.0':'doi:10.1029/2018WR024535 doi:10.5281/zenodo.3717921',
     '1.1.0':'doi:10.1029/2018WR024535 doi:10.5281/zenodo.3717921',
+    '1.2.0':'doi:10.1029/2018WR024535 doi:10.5281/zenodo.3717921 doi:10.2136/sssaj2018.12.0481',
 }
 version_comments = {
     '1.0.0':'This version of the data (1.0.0) was created with the initial soil moisture model code and has known problems. The problems known in this version are corrected in version 1.1.0.',
     '1.1.0':'This version of the data (1.1.0) corrects known problems in version 1.0.0. Model fitting has been improved to enforce non-negative nuggets and the gaussian (gaussV) model has been eliminated.',
+    '1.2.0':'This version of the data (1.2.0) is based on an updated soil property database (MesoSoil version 2.0) and an updated sensor calibration for estimating matric potential as described in: Zhang, Y., Ochsner, T. E., Fiebrich, C. A., & Illston, B. G. (2019). Recalibration of Sensors in One of The World\'s Longest Running Automated Soil Moisture Monitoring Networks. Soil Science Society of America Journal, 83(4), 1003-1011. doi:10.2136/sssaj2018.12.0481.',
 }
 version_dois = {
     # DOIs issued for specific versions of the code
     '1.0.0':'10.5281/zenodo.3717922',
     '1.1.0':'10.5281/zenodo.3875685',
+    '1.2.0':'',
 }
 
 
