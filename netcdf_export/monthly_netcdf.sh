@@ -3,7 +3,7 @@
 
 month="$1"  # e.g. "2018-07"
 
-version="1.1.0"
+version="1.2.0"
 input_raster_dir="/opt/soilmapnik/output/raw_rasters"
 input_model_dir="/opt/soilmapnik/output/semivariogram/model"
 input_rmse_dir="/opt/soilmapnik/output/kriging_cross_validation"
