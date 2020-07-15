@@ -42,11 +42,12 @@ vwc_df = df['theta_r'] + (df['theta_s'] - df['theta_r']) / (1 + (-df['alpha']*MP
 # compute effective saturation
 Se_df = (vwc_df - df['theta_r'])/(df['theta_s'] - df['theta_r'])
 
-# compute hydraulic conductivity
-K_df = df['ko']*Se_df**df['l']*(1-(1-Se_df**(df['n']/(df['n']-1)))**(1-1./df['n']))**2
+# compute hydraulic conductivity -- removed for MesoSoil 2.0 compatibility
+#K_df = df['ko']*Se_df**df['l']*(1-(1-Se_df**(df['n']/(df['n']-1)))**(1-1./df['n']))**2
 
 # combine all soil moisture variables into a single DataFrame
-sm_df = concat([df['TR'], MP_df, vwc_df, Se_df, K_df], axis=1, keys=['TR', 'MP', 'vwc', 'Se', 'K'])
+#sm_df = concat([df['TR'], MP_df, vwc_df, Se_df, K_df], axis=1, keys=['TR', 'MP', 'vwc', 'Se', 'K'])
+sm_df = concat([df['TR'], MP_df, vwc_df, Se_df], axis=1, keys=['TR', 'MP', 'vwc', 'Se'])
 sm_df.columns.names = [None, None]
 sm_df = sm_df.sort_index(1).loc[:, (slice(None), use_depths)]
 
