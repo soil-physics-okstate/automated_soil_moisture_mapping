@@ -342,19 +342,25 @@ for date_str in dates:
         # pull in model, nugget, sill, range, rmse
         model_filename = model_name_pattern % (str(d), date_str2)
         model_file = os.path.join(model_dir, model_filename)
-        with open(model_file, 'r') as fh:
-            model_data = fh.read().replace('\r','').replace('\n',',').split(',')
-            model_var[itime,idepth] = models[model_data[0]]
-            nugget_var[itime,idepth] = float(model_data[1])
-            sill_var[itime,idepth] = float(model_data[2])
-            range_var[itime,idepth] = float(model_data[3])
+        try:
+            with open(model_file, 'r') as fh:
+                model_data = fh.read().replace('\r','').replace('\n',',').split(',')
+                model_var[itime,idepth] = models[model_data[0]]
+                nugget_var[itime,idepth] = float(model_data[1])
+                sill_var[itime,idepth] = float(model_data[2])
+                range_var[itime,idepth] = float(model_data[3])
+        except IOError:
+            pass 
 
         rmse_filename = rmse_name_pattern % (str(d), date_str2)
         rmse_file = os.path.join(rmse_dir, rmse_filename)
-        with open(rmse_file, 'r') as fh:
-            rmse_data = fh.read().replace('\r','').replace('\n','')
-            #rmse_data = np.loadtxt(rmse_file) # should only contain a single floating point number
-            rmse_var[itime,idepth] = float(rmse_data)
+        try:
+            with open(rmse_file, 'r') as fh:
+                rmse_data = fh.read().replace('\r','').replace('\n','')
+                #rmse_data = np.loadtxt(rmse_file) # should only contain a single floating point number
+                rmse_var[itime,idepth] = float(rmse_data)
+        except IOError:
+            pass 
 
         #for v in ['vwc','residual','variance']:
         for v in ['vwc','variance']:
