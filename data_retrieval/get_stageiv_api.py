@@ -19,7 +19,7 @@ date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 # midnight is at Current Date, 0600 UTC
 date = date + timedelta(hours=6)
 
-url = 'http://www.mesonet.org/data/public/noaa/qpe/abrfc/1hr_netcdf/%04d/%02d/%02d/%s.nc'
+url = 'http://data.mesonet.org/data/public/noaa/qpe/abrfc/1hr_netcdf/%04d/%02d/%02d/%s.nc'
 # url takes (year, month, day, t_str)
 
 # the netCDF files started using a different format on 2014-03-17 0000Z

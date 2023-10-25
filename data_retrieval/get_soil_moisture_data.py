@@ -13,7 +13,7 @@ use_depths = [5, 25, 60]
 date = date + timedelta(hours=6)
 
 date_str = date.strftime('%Y%m%d%H%M') # yyyymmddHHMM
-url = 'http://www.mesonet.org/data/public/mesonet/mdf/%04d/%02d/%02d/%s.mdf'
+url = 'http://data.mesonet.org/data/public/mesonet/mdf/%04d/%02d/%02d/%s.mdf'
 # url takes (year, month, day, date_str)
 
 # set the data directories
