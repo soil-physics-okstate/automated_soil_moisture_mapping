@@ -11,7 +11,7 @@ output_netcdf_dir="/opt/soilmapnik/output/netcdf/monthly"
 venv="/opt/soilmapnik/automated_soil_moisture_mapping/venv/bin/activate"
 
 if [[ "${month}" == "$(date +%Y-%m)" ]]; then
-  num_days=$(($(date +%d) - 1))
+  num_days=$(($(date +%-d) - 1))
 else
   num_days=$(($(date --date="${month}-01 +1 month -1 day" +%d) - 1))
 fi
