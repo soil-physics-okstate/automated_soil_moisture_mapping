@@ -2,7 +2,7 @@ dbname = 'soilmapnik'
 
 # Load latest mesonet station data
 
-print 'Updating Mesonet geoinfo...'
+print('Updating Mesonet geoinfo...')
 
 from pandas import read_csv
 
@@ -21,8 +21,8 @@ cur = conn.cursor()
 
 ncol = len(columns.split(','))
 query =  'INSERT INTO mesonet_geoinfo (%s) ' % (columns)
-query += 'VALUES (%s);' % (','.join(['%s' for i in xrange(ncol)]))
-print query
+query += 'VALUES (%s);' % (','.join(['%s' for i in range(ncol)]))
+print(query)
 
 # Update mesonet stations
 
@@ -44,4 +44,4 @@ conn.commit()
 cur.close()
 conn.close()
 
-print '  Done.'
+print('  Done.')

@@ -124,7 +124,7 @@ def get_stageiv_polygon(x, y):
     lr = ur + np.array((0, dy))
     ll = ul + np.array((0, dy))
 
-    xs, ys = zip(*(ul, ur, lr, ll))
+    xs, ys = list(zip(*(ul, ur, lr, ll)))
     lons, lats = p(xs, ys, inverse=True)
 
-    return zip(*(lons, lats))
+    return list(zip(*(lons, lats)))

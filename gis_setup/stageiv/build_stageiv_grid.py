@@ -11,9 +11,9 @@ query = 'INSERT INTO stageiv_grid (x, y, geom_pixel) VALUES (%s, %s, ST_SetSRID(
 nx = 335 # number of columns in grid
 ny = 159 # number of rows in grid
 
-for x in xrange(nx):
+for x in range(nx):
 
-    for y in xrange(ny):
+    for y in range(ny):
 
         # get the polygon corners
         corners = s4.get_stageiv_polygon(x ,y)
