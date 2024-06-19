@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import numpy as np
 
 start_date = datetime(2015, 12, 31)
-end_date = datetime(2010, 01, 01)
+end_date = datetime(2010, 0o1, 0o1)
 dst_offset = timedelta(hours=6)
 
 seasons = ['dummy'] + ['winter']*2 + ['fall']*3 + ['summer']*3 + ['spring']*3 + ['winter']
@@ -12,7 +12,7 @@ seasons = ['dummy'] + ['winter']*2 + ['fall']*3 + ['summer']*3 + ['spring']*3 + 
 #date = date + timedelta(hours=6)
 
 # read the Mesonet grid
-import cPickle as pickle
+import pickle as pickle
 meso_df = pickle.load(open('../static_data/mesonet/mesonet_geoinfo_ssurgo_stageiv.pickle'))
 
 # soil moisture filenames
@@ -32,13 +32,13 @@ dfs = []
 
 # NetCDF files' valid times include precip summed over the previous hour
 # so data collection should stop at 0500 UTC
-nc_hours = range(1, 24 + 1) # will not include 0600!
+nc_hours = list(range(1, 24 + 1)) # will not include 0600!
 nc_dh = np.array([timedelta(hours = h) for h in nc_hours])
 
 date = start_date + dst_offset
 while date >= end_date:
 
-    print '%s --- %s' % (datetime.now(), date)
+    print('%s --- %s' % (datetime.now(), date))
 
     # get list of times and start a list of files
     nc_times = date - nc_dh

@@ -15,16 +15,16 @@ k_test = [
     
 step = 1
 nd_test = [
-    range(165, 171, step),
+    list(range(165, 171, step)),
     #range(44, 46, step),
-    range(140, 147, step)
+    list(range(140, 147, step))
 ]
 
 # set up the slice for the season
 s = (slice(None), slice(None), season)
 
 # read the precip and soil moisture data
-import cPickle as pickle
+import pickle as pickle
 data_df = pickle.load(open('tmp/meso_precip_sm_data.pickle'))
 data_df = data_df.reset_index(level='Season')
 
@@ -42,7 +42,7 @@ niter = np.sum([len(ks) * len(ndays) for (ks, ndays) in zip(k_test, nd_test)])
 for (ks, ndays) in zip(k_test, nd_test):
     for k in ks:
         for nday in ndays:
-            print '%d/%d' % (iiter, niter)
+            print('%d/%d' % (iiter, niter))
 
             # compute the API weights
             weights = k**np.arange(nday)
@@ -53,7 +53,7 @@ for (ks, ndays) in zip(k_test, nd_test):
 
             # compute API for each site/day, use NaN if not enough days available
             apis = []
-            for i in xrange(n_precip):
+            for i in range(n_precip):
                 if (i + nday) < n_precip:
                     api = np.sum(precip[:, i:i+nday] * weights, axis=1)
                 else:
@@ -78,7 +78,7 @@ for (ks, ndays) in zip(k_test, nd_test):
 from pandas import DataFrame
 df = DataFrame(rs, columns=['k', 'nday', 'r_5', 'r_25', 'r_60']).set_index(['k', 'nday'])
 
-print df.sort_values('r_5', ascending=False)['r_5'].head()
-print df.sort_values('r_25', ascending=False)['r_25'].head()
-print df.sort_values('r_60', ascending=False)['r_60'].head()
+print(df.sort_values('r_5', ascending=False)['r_5'].head())
+print(df.sort_values('r_25', ascending=False)['r_25'].head())
+print(df.sort_values('r_60', ascending=False)['r_60'].head())
 
