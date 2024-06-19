@@ -1,12 +1,12 @@
 import sys
 from datetime import datetime, timedelta
 import numpy as np
-from urllib import urlretrieve
+from urllib.request import urlretrieve
 from pandas import DataFrame
 from os.path import isfile
 
 api_params = { # parameters for the Antecedent Precipitation Index
-    05: {'days': 24, 'k': 1.025},
+    0o5: {'days': 24, 'k': 1.025},
     25: {'days': 24, 'k': 1.006},
     60: {'days': 22, 'k': 0.993}
 }
@@ -34,7 +34,7 @@ nc_dir = '/opt/soilmapnik/hourly_stageiv_precip_netcdf/'
 
 # NetCDF files' valid times include precip summed over the previous hour
 # so data collection should stop at 0500 UTC
-nc_hours = range(1, 24*nd + 1) # will not include 0600!
+nc_hours = list(range(1, 24*nd + 1)) # will not include 0600!
 nc_dh = np.array([timedelta(hours = h) for h in nc_hours])
 
 # get list of times and start a list of files
@@ -81,7 +81,7 @@ if np.sum(nc_times < nc_switch): # older netCDF files must be opened one-by-one
 
         # if neither of those are found, exit
         else:
-            print 'Could not find precipitation data in %s' % (nc_file)
+            print('Could not find precipitation data in %s' % (nc_file))
             sys.exit(1)
 
         nc.close()
