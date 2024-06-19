@@ -13,7 +13,7 @@ df['x'], df['y'] = (df['x'] + p['offset']['x'], df['y'] + p['offset']['y'])
 # create the rectangle patches
 from matplotlib.patches import Rectangle
 
-xy_pairs = zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.)
+xy_pairs = list(zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.))
 df['patches'] = [Rectangle(xy, width=p['dx'], height=p['dy']) for xy in xy_pairs]
 
 # save the patches

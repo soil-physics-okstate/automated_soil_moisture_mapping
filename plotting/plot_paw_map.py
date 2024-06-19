@@ -55,7 +55,7 @@ date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
 ## load static data sources
-import cPickle as pickle
+import pickle as pickle
 
 # grid
 df = pickle.load(open(input_static_data_dir + 'grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
@@ -105,7 +105,7 @@ else: # otherwise build a new PatchCollection
     # Rectangle() has its lower left corner at (x, y),
     # but each (x, y) grid point in the DataFrame is defined at its center,
     # so generate xy pairs by shifting down and left by (dx/2, dy/2)
-    xy_pairs = zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.)
+    xy_pairs = list(zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.))
     patches = [Rectangle(xy, width=p['dx'], height=p['dy']) for xy in xy_pairs]
 
     # build PatchCollection from the Patches
@@ -119,7 +119,7 @@ pc.set_array(df[map_var].values)
 
 # color the PatchCollection based on soil moisture
 pc.set_cmap(cmap) # set color map
-if 'ticks' in map_vars[map_var].keys(): # set color map limits based on min/max tick values
+if 'ticks' in list(map_vars[map_var].keys()): # set color map limits based on min/max tick values
     pc.set_clim([min(map_vars[map_var]['ticks']),
                 max(map_vars[map_var]['ticks'])])
 
@@ -154,7 +154,7 @@ cbax = fig.add_axes([0.16, 0.32, 0.1, 0.42]) # place it underneath the OK Panhan
 cbax.set_axis_off() # turn off axis ticks
 cb = fig.colorbar(pc, ax = cbax, fraction = 1, aspect = 8,
                   label = map_vars[map_var]['units'], spacing = 'proportional')
-if 'ticks' in map_vars[map_var].keys(): # add colorbar ticks
+if 'ticks' in list(map_vars[map_var].keys()): # add colorbar ticks
     cb.set_ticks(map_vars[map_var]['ticks'])
 
 # add text info

@@ -28,7 +28,7 @@ output_dir = '../output/diagnostics/api/'
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
 ## load static data sources
-import cPickle as pickle
+import pickle as pickle
 
 df = pickle.load(open(input_static_data_dir + 'grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
 m = pickle.load(open(map_cache_dir + 'oklahoma_basemap.pickle'))
@@ -71,7 +71,7 @@ else: # otherwise build a new patch collection
 
     # create the rectangle patches
     from matplotlib.patches import Rectangle
-    xy_pairs = zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.)
+    xy_pairs = list(zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.))
     patches = [Rectangle(xy, width=p['dx'], height=p['dy']) for xy in xy_pairs]
 
     # build PatchCollection from remaining patches

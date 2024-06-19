@@ -13,7 +13,7 @@ cmap = 'YlOrBr'
 dpi = 150. # screens are usually 96 dpi
 ticks = np.arange(0, 100.1, 20)
 
-import cPickle as pickle
+import pickle as pickle
 
 input_data_dir = '../static_data/'
 map_cache_dir = 'map_cache/'
@@ -41,7 +41,7 @@ except Exception:
     from matplotlib.collections import PatchCollection
     from matplotlib.patches import Rectangle
 
-    xy_pairs = zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.)
+    xy_pairs = list(zip(df['x'].values - p['dx']/2., df['y'].values - p['dy']/2.))
     patches = [Rectangle(xy, width=p['dx'], height=p['dy']) for xy in xy_pairs]
     pc = PatchCollection(patches, edgecolor='None')
     patches = None

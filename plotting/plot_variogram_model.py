@@ -11,7 +11,7 @@ depth = int(argv[2])
 
 output_dir = '../output/diagnostics/semivariogram/'
 
-import cPickle as pickle
+import pickle as pickle
 from pandas import read_csv
 
 input_semivar_dir = '../output/semivariogram/data/'

@@ -11,7 +11,7 @@ depth = int(argv[2])
 
 output_dir = '../output/diagnostics/regression/'
 
-import cPickle as pickle
+import pickle as pickle
 from pandas import read_csv, concat
 
 input_model_dir = '../dynamic_data/regression/model/'
