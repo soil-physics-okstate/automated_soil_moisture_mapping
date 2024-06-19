@@ -14,7 +14,7 @@ output_data_dir = '../dynamic_data/'
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
 # load static (pickled) data sources
-import cPickle as pickle
+import pickle as pickle
 
 meso_df = pickle.load(open(input_static_data_dir + 
                            'mesonet/mesonet_geoinfo_ssurgo_stageiv.pickle'))
