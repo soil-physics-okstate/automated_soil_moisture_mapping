@@ -21,7 +21,7 @@ for i,interp in enumerate(interps):
         temp_df['date'] = datetime.strptime(fname[-12:-4], '%Y%m%d')
         temp_dfs.append(temp_df)
 
-        print '%d of %d interps, %4d of %4d dates' % (i+1, len(interps)+1, j+1, n)
+        print('%d of %d interps, %4d of %4d dates' % (i+1, len(interps)+1, j+1, n))
     
     temp_df = concat(temp_dfs).set_index(['date', 'STID'])
     if interp == 'barnes': temp_df = temp_df.drop(map_var, axis=1)
@@ -34,7 +34,7 @@ for j,fname in enumerate(glob.glob('xval_rk_vwc/*_%02dcm*.csv' % (depth))):
     temp_df = read_csv(fname)
     temp_df['date'] = datetime.strptime(fname[-12:-4], '%Y%m%d')
     temp_dfs.append(temp_df)
-    print '%d of %d interps, %4d of %4d dates' % (i+1, len(interps)+1, j+1, n)
+    print('%d of %d interps, %4d of %4d dates' % (i+1, len(interps)+1, j+1, n))
 temp_df = concat(temp_dfs).set_index(['date', 'STID'])
 dfs.append(temp_df)
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 start_date = datetime(2015, 10, 23)
-end_date = datetime(2015, 11, 07)
+end_date = datetime(2015, 11, 0o7)
 fname_suffix = 'zoom'
 
 map_var = 'vwc'

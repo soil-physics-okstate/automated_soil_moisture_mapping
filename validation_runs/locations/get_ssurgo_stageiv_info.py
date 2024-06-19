@@ -5,7 +5,7 @@ import psycopg2
 conn = psycopg2.connect('dbname=%s' % (dbname))
 cur = conn.cursor()
 
-import cPickle as pickle
+import pickle as pickle
 
 # Get base grid information
 
@@ -32,9 +32,9 @@ for site, row in df.iterrows():
     results = cur.fetchall()
     if not results: continue
     if len(results) > 1 or len(results[0]) > 1:
-        print 'Multiple results found for id %s %d:' % site
-        print results
-        print
+        print('Multiple results found for id %s %d:' % site)
+        print(results)
+        print()
 
     df.loc[site, 'mukey'] = int(results[0][0])
 
@@ -49,9 +49,9 @@ for site, row in df.iterrows():
     results = cur.fetchall()
     if not results: continue
     if len(results) > 1:
-        print 'Multiple results found for id %s %d:' % site
-        print results
-        print
+        print('Multiple results found for id %s %d:' % site)
+        print(results)
+        print()
 
     df.loc[site, ['s4x', 's4y']] = results[0]
 

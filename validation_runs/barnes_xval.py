@@ -18,7 +18,7 @@ date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
 # load static (pickled) data sources
-import cPickle as pickle
+import pickle 
 
 meso_df = pickle.load(open(input_static_data_dir +
                            'mesonet/mesonet_geoinfo_ssurgo_stageiv.pickle'))
@@ -59,7 +59,7 @@ mz = np.ma.array(mzo, mask=False)
 Dns = np.array([])
 
 # find and store nearest neighboring station distances
-for i in xrange(len(mx)):
+for i in range(len(mx)):
 
     # mask the current station from computation
     mx.mask[i] = True
@@ -88,6 +88,7 @@ kappa0_n = 5.052*(2 * Dn/np.pi)**2
 def barnes_interp((gx, gy)):
 
     # first pass
+    (gx, gy) = xxx_todo_changeme
     gamma = 1
     w = np.exp(-((mxo-gx)**2 + (myo-gy)**2)/(kappa0_n * gamma))
     gz = np.sum(w*mzo)/np.sum(w)
@@ -95,7 +96,7 @@ def barnes_interp((gx, gy)):
     # subsequent passes
     gamma = 0.2
     w = np.exp(-((mxo-gx)**2 + (myo-gy)**2)/(kappa0_n * gamma))
-    for ipass in xrange(passes-1):
+    for ipass in range(passes-1):
         gz = gz + np.sum((mzo - gz)*w)/np.sum(w)    
 
     return gz
@@ -125,13 +126,13 @@ def barnes_crossval(i):
     # subsequent passes
     gamma = 0.2
     w = np.exp(-((mxx-gx)**2 + (myy-gy)**2)/(kappa0_n * gamma))
-    for ipass in xrange(passes-1):
+    for ipass in range(passes-1):
         gz = gz + np.sum((mzz - gz)*w)/np.sum(w)    
 
     return gz
 
 # get a list of all grid points
-gxy = zip(grid_df['x'].values, grid_df['y'].values)
+gxy = list(zip(grid_df['x'].values, grid_df['y'].values))
 
 # set up the multiprocessing pool
 #from multiprocessing import Pool
@@ -143,7 +144,7 @@ gxy = zip(grid_df['x'].values, grid_df['y'].values)
 
 # compute cross-validation using pool
 #meso_df[col + '_interp'] = pool.map(barnes_crossval, range(len(meso_df)))
-meso_df[map_var + '_barnes'] = map(barnes_crossval, xrange(len(meso_df)))
+meso_df[map_var + '_barnes'] = list(map(barnes_crossval, range(len(meso_df))))
 #rmse = np.sqrt(np.mean((meso_df[col] - meso_df[col + '_interp'])**2))
 
 # save

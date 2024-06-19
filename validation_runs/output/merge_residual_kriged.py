@@ -10,7 +10,7 @@ import glob
 
 fnames = glob.glob(input_dir + '*_%dcm*.csv' % (depth))
 
-import cPickle as pickle
+import pickle as pickle
 from pandas import read_csv
 
 info_df = pickle.load(open('../locations/all_sites_ssurgo_stageiv.pickle'))

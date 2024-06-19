@@ -1,7 +1,7 @@
 sites = ['smap', 'jfsp']
 
 import os
-import cPickle as pickle
+import pickle as pickle
 
 mat_dict = {'site': [], 'station': [], 'x': [], 'y': []}
 dfs = []

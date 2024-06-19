@@ -18,7 +18,7 @@ ok_df = read_csv('output/merged_timeseries/%s_%dcm_ordinary_kriged.csv' % (map_v
                  **kwargs)
 
 
-years = range(2010, 2016)
+years = list(range(2010, 2016))
 sites = data_df.columns.values
 
 import matplotlib

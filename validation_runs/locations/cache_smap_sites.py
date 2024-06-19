@@ -1,5 +1,5 @@
 cols = ['site', 'station', 'lat', 'lon']
-data = dict(zip(cols, [[] for c in cols]))
+data = dict(list(zip(cols, [[] for c in cols])))
 
 for line in open('smap_core_validation_sites.txt'):
     col = line.rstrip().split(',')

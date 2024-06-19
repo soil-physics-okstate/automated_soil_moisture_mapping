@@ -1,4 +1,4 @@
-import cPickle as pickle
+import pickle as pickle
 
 grid_df = pickle.load(open('../static_data/grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
 meso_df = pickle.load(open('../static_data/mesonet/mesonet_geoinfo_ssurgo_stageiv.pickle'))
@@ -37,7 +37,7 @@ i = 0
 
 for gid,row in grid_df.iterrows():
     if (i % 1000) == 0:
-        print '%6d / %d' % (i, len(grid_df))
+        print('%6d / %d' % (i, len(grid_df)))
     i += 1
 
     #if row['x'] < xmin: continue

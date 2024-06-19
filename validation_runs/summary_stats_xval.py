@@ -20,14 +20,14 @@ def corr(df, col1, col2):
     return df[col1].corr(df[col2])
 
 schemes = ['barnes', 'ok', 'rk']
-print '\tRMSE\tMAE\tBias\tCorr'
+print('\tRMSE\tMAE\tBias\tCorr')
 for scheme in schemes:
     col = 'bias_%s' % (scheme)
-    print '%s\t' % (scheme),
-    print '%.3g\t' % (rmse(df, col)),
-    print '%.3g\t' % (mae(df, col)),
-    print '%.1g\t' % (bias(df, col)),
+    print('%s\t' % (scheme), end=' ')
+    print('%.3g\t' % (rmse(df, col)), end=' ')
+    print('%.3g\t' % (mae(df, col)), end=' ')
+    print('%.1g\t' % (bias(df, col)), end=' ')
 
     col1 = 'vwc'
     col2 = 'vwc_%s' % (scheme)
-    print '%.3g' % (corr(df, col1, col2))
+    print('%.3g' % (corr(df, col1, col2)))

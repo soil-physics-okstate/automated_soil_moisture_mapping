@@ -1,7 +1,7 @@
 import sys
 
 if len(sys.argv) != 3:
-    print 'Usage: create_temp_soil_moisture_input.py <date> <depth>'
+    print('Usage: create_temp_soil_moisture_input.py <date> <depth>')
     sys.exit(1)
 
 date = sys.argv[1]
@@ -19,7 +19,7 @@ sm_input_fname = 'sm_data_%s.csv' # (yyyymmdd)
 grid_input_dir = '../static_data/mesonet/'
 grid_input_fname = 'mesonet_geoinfo_ssurgo_stageiv.pickle'
 
-import cPickle as pickle
+import pickle as pickle
 
 grid_df = pickle.load(open(grid_input_dir + grid_input_fname))
 
