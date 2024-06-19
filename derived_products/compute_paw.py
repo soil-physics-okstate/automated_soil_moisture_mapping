@@ -6,7 +6,7 @@ from datetime import datetime
 ## Command-line
 
 if len(sys.argv) != 2:
-    print 'Usage: compute_paw.py <yyyy-mm-dd>'
+    print('Usage: compute_paw.py <yyyy-mm-dd>')
     sys.exit(1)
 
 date_in = sys.argv[1] # current date passed in as yyyy-mm-dd
