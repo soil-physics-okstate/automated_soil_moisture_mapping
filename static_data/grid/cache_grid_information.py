@@ -46,9 +46,9 @@ if not isfile(fname):
         results = cur.fetchall()
         if not results: continue
         if len(results) > 1 or len(results[0]) > 1:
-            print 'Multiple results found for id %d:' % (gid)
-            print results
-            print
+            print('Multiple results found for id %d:' % (gid))
+            print(results)
+            print()
 
         df.loc[gid, 'mukey'] = int(results[0][0])
 
@@ -76,9 +76,9 @@ if not isfile(fname):
         results = cur.fetchall()
         if not results: continue
         if len(results) > 1:
-            print 'Multiple results found for id %d:' % (gid)
-            print results
-            print
+            print('Multiple results found for id %d:' % (gid))
+            print(results)
+            print()
 
         df.loc[gid, ['s4x', 's4y']] = results[0]
 

@@ -26,7 +26,7 @@ df = DataFrame(columns = columns, index=index)
 
 columns = ['cokey', 'hztop', 'hzbot'] + columns
 for i,mukey in enumerate(mukeys):
-    print '%8d/%8d (%.2f%%)' % (i, len(mukeys), float(i)/len(mukeys)*100)
+    print('%8d/%8d (%.2f%%)' % (i, len(mukeys), float(i)/len(mukeys)*100))
 
     # grab the cokeys and relative fractions from components table
     query = '''
@@ -103,7 +103,7 @@ for i,mukey in enumerate(mukeys):
         ckeys = np.array(cokeys)[np.array(cokey_valid)].astype(int)
         cpcts = np.array(comppcts)[np.array(cokey_valid)]
         fcomps = cpcts/float(np.sum(cpcts))
-        fcomps = dict(zip(ckeys, fcomps))
+        fcomps = dict(list(zip(ckeys, fcomps)))
         layer_df['fcomp'] = [fcomps[c] for c in layer_df['cokey'].values]
         
         # compute the sand, silt, and clay contents using the weighted averages
