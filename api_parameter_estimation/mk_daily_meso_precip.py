@@ -72,7 +72,7 @@ while date >= end_date:
                 precips_old.append(nc.variables['Total_precipitation'][:][0]) 
                     
             else:
-                raise 'Uh oh!'
+                raise ValueError ('Uh oh!')
 
             nc.close()
 
