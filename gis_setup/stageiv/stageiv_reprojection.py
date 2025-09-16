@@ -128,3 +128,5 @@ def get_stageiv_polygon(x, y):
     lons, lats = p(xs, ys, inverse=True)
 
     return zip(*(lons, lats))
+
+print('Stage IV reprojection module loaded.')

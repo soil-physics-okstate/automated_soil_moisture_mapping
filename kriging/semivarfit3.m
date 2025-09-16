@@ -39,7 +39,7 @@ param = paramlist{model_idx};
 model = modelnamesgeo{model_idx};
 
 % plot empirical variograms and the fitted models
-figure
+figure('Visible', 'off')
 for i=1:length(modelnamesgeo)
     subplot(2,2,i)
     set(gca,'FontSize',14);

@@ -31,11 +31,14 @@ output_dir = '../output/diagnostics/kriging_residual/'
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
 ## load static data sources
-import cPickle as pickle
-
-df = pickle.load(open(input_static_data_dir + 'grid/soil_moisture_grid_ssurgo_stageiv.pickle'))
-m = pickle.load(open(map_cache_dir + 'oklahoma_basemap.pickle'))
-p = pickle.load(open(map_cache_dir + 'map_params.pickle'))
+# Change to migrate from python 2 to 3 (edited by Ali):
+# cPickle was merged into pickle in Python 3.
+import pickle
+# Change to migrate from python 2 to 3 (edited by Ali):
+# In Python 3, pickle.load() requires binary mode 'rb' for reading.
+df = pickle.load(open(input_static_data_dir + 'grid/soil_moisture_grid_ssurgo_stageiv_py3.pkl', 'rb'))
+m = pickle.load(open(map_cache_dir + 'oklahoma_basemap.pickle', 'rb'))#Chane to migrate from python 2 to 3 (edited by Ali):
+p = pickle.load(open(map_cache_dir + 'map_params.pickle', 'rb'))#Chane to migrate from python 2 to 3 (edited by Ali):
 
 ## load dynamic data sources
 from pandas import read_csv
@@ -61,12 +64,20 @@ from os.path import exists
 from hashlib import md5
 
 # hash the grid ids to generate a unique filename for PatchCollection
-id_hash = md5(df.index.values).hexdigest()
+# Change to migrate from python 2 to 3 (edited by Ali):
+# In Python 2: we could pass a numpy array or string-like object directly into hashlib.md5()
+# and it would implicitly convert it to a byte string. 
+# In Python 3: hashlib.md5() strictly requires a bytes object as input. 
+# we cannot pass raw strings, numpy arrays, or other non-bytes types.
+id_hash = md5(str(df.index.values).encode()).hexdigest()
 pc_fname = map_cache_dir + '800m_pixels_%s.pickle' % (id_hash)
 
 if exists(pc_fname): # if that filename exists, load the file
-    pc = pickle.load(open(pc_fname)) # patches object
-
+    # Change to migrate from python 2 to 3 (edited by Ali):
+    # In Python 3, pickle.load() requires binary mode 'rb' for reading.
+    # pc = pickle.load(open(pc_fname, 'rb')) # patches object
+    with open(pc_fname, 'rb') as f:
+        pc = pickle.load(f)
 else: # otherwise build a new patch collection
 
     # put the grid in map coordinates
@@ -80,7 +91,9 @@ else: # otherwise build a new patch collection
     # build PatchCollection from remaining patches
     pc = PatchCollection(patches, edgecolor='None')
     patches = None # clear memory
-    pickle.dump(pc, open(pc_fname, 'w')) # save PatchCollection
+    # Change to migrate from python 2 to 3 (edited by Ali):
+    # In Python 3, pickle.load() requires binary mode 'wb' for reading.
+    pickle.dump(pc, open(pc_fname, 'wb')) # save PatchCollection
 
 values = np.ma.masked_invalid(df['Z'].astype(np.float32).values)
 
@@ -129,8 +142,21 @@ cb.set_ticks(ticks)
 (lrx, lry) = m(p['right'], p['bottom'])
 ax.text(llx, lly, '%d-cm %s' % (depth, 'Kriged Soil Moisture Residuals'),
         size = 20, family = 'sans-serif', ha = 'left', va = 'bottom')
-ax.text(lrx, lry, 'valid %s CST' % (date.strftime('%-I:%M %p %B %-d, %Y')),
-        size = 11, family = 'sans-serif', ha = 'right', va = 'bottom')
+# ax.text(lrx, lry, 'valid %s CST' % (date.strftime('%-I:%M %p %B %-d, %Y')),
+#        size = 11, family = 'sans-serif', ha = 'right', va = 'bottom')
+# Extract components manually for compatibility
+hour_min = date.strftime('%I:%M %p').lstrip('0')  # e.g., '1:30 PM'
+month = date.strftime('%B')                       # e.g., 'August'
+day = date.strftime('%d').lstrip('0')             # e.g., '1'
+year = date.strftime('%Y')                        # e.g., '2025'
+
+# Build the label
+label = 'valid {} {} {}, {} CST'.format(hour_min, month, day, year)
+
+# Add text to plot
+ax.text(lrx, lry, label,
+        size=11, family='sans-serif', ha='right', va='bottom')
+
 
 # Save the map
 fig.savefig(output_dir + 'kr_%02dcm_%s.png' % (depth, date_in), dpi=dpi)

@@ -1,5 +1,8 @@
+DROP TABLE IF EXISTS soil_moisture_grid_opt;
+
 CREATE TABLE soil_moisture_grid_opt AS
-       SELECT id, ST_Transform(geom_point, 990001) FROM soil_moisture_grid;
+       SELECT id, ST_Transform(geom_point, 990001) AS geom_point
+       FROM soil_moisture_grid;
 
 ALTER TABLE soil_moisture_grid_opt ADD PRIMARY KEY (id);
 

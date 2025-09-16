@@ -14,9 +14,11 @@ mapvar="vwc"
 
 # do kriging and create CSV
 cd kriging
-matlab -nodisplay -nodesktop -singleCompThread -r "krige_data('$date', '$depth'); exit;" &> log/kriging_${date}_${depth}cm.log
+# "/c/Program Files/MATLAB/R2024b/bin/matlab.exe" -wait -nodisplay -nodesktop -singleCompThread -r "krige_data('$date', '$depth'); exit;" &> log/kriging_${date}_${depth}cm.log
+python krige_data.py $date $depth &> log/kriging_${date}_${depth}cm.log
+echo "matlab done"
 python create_outputs.py $date $depth &>> log/kriging_${date}_${depth}cm.log
-
+echo "create_outputs done"
 cd ..
 
 # do plotting
