@@ -3,7 +3,7 @@ import psycopg2
 
 dbname = 'soilmapnik'
 
-conn = psycopg2.connect('dbname=%s' % (dbname))
+conn = psycopg2.connect('dbname=%s' % (dbname), user='postgres', password='Ali292Ali292')
 cur = conn.cursor()
 
 query = 'INSERT INTO stageiv_grid (x, y, geom_pixel) VALUES (%s, %s, ST_SetSRID(ST_MakePolygon(ST_GeomFromText(%s)), 4326));'
@@ -11,12 +11,12 @@ query = 'INSERT INTO stageiv_grid (x, y, geom_pixel) VALUES (%s, %s, ST_SetSRID(
 nx = 335 # number of columns in grid
 ny = 159 # number of rows in grid
 
-for x in xrange(nx):
+for x in range(nx):
 
-    for y in xrange(ny):
+    for y in range(ny):
 
         # get the polygon corners
-        corners = s4.get_stageiv_polygon(x ,y)
+        corners = list(s4.get_stageiv_polygon(x ,y))
         
         # build a string for PostGIS
         linestr = 'LINESTRING('
@@ -31,3 +31,4 @@ conn.commit()
 
 cur.close()
 conn.close()
+print('Stage IV grid polygons inserted into database.')

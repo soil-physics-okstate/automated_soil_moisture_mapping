@@ -78,7 +78,10 @@ ydown = -np.arange(ds/2, abs(ymin)+ds, ds).astype(int)[::-1]
 yup =    np.arange(ds/2, ymax+ds, ds).astype(int)
 ys = np.concatenate((ydown, yup))
 
-
+# ADDED by WK
+xs = [int(x) for x in xs]
+ys = [int(y) for y in ys]
+# END
 ## Store grid in database
 
 import psycopg2
@@ -94,9 +97,10 @@ query += '(id, x, y) VALUES (%s, %s, %s);'
 i = 0 # unique id number
 for x in xs:
     for y in ys:
-        cur.execute(query, (i, x, y))
+        cur.execute(query, (int(i), int(x), int(y)))
         i += 1
 
 conn.commit()
 cur.close()
 conn.close()
+print('Grid of %d points inserted into table %s.' % (i, table))

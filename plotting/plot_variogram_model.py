@@ -10,8 +10,9 @@ date_str = date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 depth = int(argv[2])
 
 output_dir = '../output/diagnostics/semivariogram/'
-
-import cPickle as pickle
+# Change to migrate from python 2 to 3 (edited by Ali):
+# cPickle was merged into pickle in Python 3. In this script, we don't use pickle, and it could be removed.
+import pickle
 from pandas import read_csv
 
 input_semivar_dir = '../output/semivariogram/data/'

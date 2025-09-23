@@ -12,18 +12,20 @@ depth=$3
 
 # set database
 dbname=soilmapnik
+export PGUSER="postgres"
+export PGPASSWORD="Ali292Ali292"
 
 # set table
 table=temp_soil_moisture_data_${map_var}_${depth}cm
 
 # create table
-psql $dbname -c "DROP TABLE ${table};"
-psql $dbname -c "CREATE TABLE $table (id INTEGER PRIMARY KEY, value DOUBLE PRECISION);"
+psql -d $dbname -c "DROP TABLE ${table};"
+psql -d $dbname -c "CREATE TABLE $table (id INTEGER PRIMARY KEY, value DOUBLE PRECISION);"
 
 # get CSV filename
 depth=`printf %02d $depth`
 csv=${map_var}_${depth}cm_${date//-/}.csv
 
 # insert data
-cat ../output/kriging_result/$csv | psql $dbname -c "COPY $table FROM stdin CSV HEADER"
-
+cat ../output/kriging_result/$csv | psql -d $dbname -c "COPY $table FROM stdin CSV HEADER"
+echo "insert_temporary_data.sh done"

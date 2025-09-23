@@ -11,6 +11,8 @@ map_var=$2
 depth=$3
 
 # set database
+export PGUSER="postgres"
+export PGPASSWORD="Ali292Ali292"
 dbname=soilmapnik
 
 # create temporary data table
@@ -29,10 +31,17 @@ FROM soil_moisture_grid_opt AS g INNER JOIN $datatable AS d ON (g.id = d.id)"
 
 # basename for temp files
 tmpbase=temp_${depth}cm_${map_var}
-rm $tmpbase.*
+pwd
+rm "$tmpbase".*
 
 # make shapefile
-ogr2ogr -f "ESRI Shapefile" $tmpbase.shp PG:"dbname=$dbname" -sql "$query"
+# export PGPASSWORD="Ali292Ali292"
+# export PGUSER="postgres"
+# ogr2ogr -f "ESRI Shapefile" $tmpbase.shp PG:"dbname=$dbname" -sql "$query"
+
+ogr2ogr -f "ESRI Shapefile" "${tmpbase}.shp" \
+  PG:"dbname=$dbname" -sql "$query"
+
 
 # make raster
 gdal_rasterize -a value -tr 800 800 -a_nodata -999 -ot Float32 $tmpbase.shp $tmpbase.tif
@@ -43,6 +52,5 @@ cp ${tmpbase}.tif ${outfile_unreprojected}
 
 # reproject raster
 rm $outfile
-proj4="+proj=cea +a=6378137 +b=6378137 +lon_0=-97.674 +lat_ts=35.3 \
-+x_0=100.000000002310 +y_0=-4563147.606432600878 +units=m +no_defs"
-gdalwarp -s_srs "$proj4" -t_srs "EPSG:3857" $tmpbase.tif $outfile
+proj4="+proj=cea +a=6378137 +b=6378137 +lon_0=-97.674 +lat_ts=35.3 +x_0=100.000000002310 +y_0=-4563147.606432600878 +units=m +no_defs"
+gdalwarp -s_srs "$proj4" -t_srs "EPSG:3857" $tmpbase.tif "${outfile}"

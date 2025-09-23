@@ -1,7 +1,8 @@
 import pickle
 
-p = pickle.load(open('map_params.pickle'))
-
+# p = pickle.load(open('map_params.pickle'))
+with open('map_params.pickle', 'rb') as f:
+    p = pickle.load(f)
 ## Load libraries
 from mpl_toolkits.basemap import Basemap
 
@@ -13,4 +14,6 @@ m = Basemap(projection = p['projection'],
             llcrnrlon = p['left'], llcrnrlat = p['bottom'],
             fix_aspect = False)
 
-pickle.dump(m, open('oklahoma_basemap.pickle', 'w'))
+# pickle.dump(m, open('oklahoma_basemap.pickle', 'w'))
+with open('oklahoma_basemap.pickle', 'wb') as f:
+    pickle.dump(m, f)

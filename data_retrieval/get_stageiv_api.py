@@ -1,12 +1,14 @@
 import sys
 from datetime import datetime, timedelta
 import numpy as np
-from urllib import urlretrieve
+# Change to migrate from python 2 to 3 (Ali's edit):
+# In Python 3, the urllib module was reorganized. urlretrieve was moved to urllib.request.
+from urllib.request import urlretrieve
 from pandas import DataFrame
 from os.path import isfile
 
 api_params = { # parameters for the Antecedent Precipitation Index
-    05: {'days': 24, 'k': 1.025},
+    0o5: {'days': 24, 'k': 1.025},
     25: {'days': 24, 'k': 1.006},
     60: {'days': 22, 'k': 0.993}
 }
@@ -30,11 +32,15 @@ input_data_dir = '../static_data/'
 output_data_dir = '../dynamic_data/'
 
 # location to store NetCDF files temporarily
-nc_dir = '/opt/soilmapnik/hourly_stageiv_precip_netcdf/'
+nc_dir = '../hourly_stageiv_precip_netcdf/'
 
 # NetCDF files' valid times include precip summed over the previous hour
 # so data collection should stop at 0500 UTC
-nc_hours = range(1, 24*nd + 1) # will not include 0600!
+
+# Change to migrate from python 2 to 3 (edited by Ali):
+# In Python 3, range() returns a range object instead of a list. 
+# When converting to a NumPy array, wrapping with list() ensures expected behavior.
+nc_hours = list(range(1, 24*nd + 1)) # will not include 0600!
 nc_dh = np.array([timedelta(hours = h) for h in nc_hours])
 
 # get list of times and start a list of files
@@ -59,8 +65,22 @@ precips = []
 # the order matters, newer data should be opened first, so start with newer netCDF files
 
 if np.sum(nc_times >= nc_switch): # newer netCDF files can be aggregated
-    from netCDF4 import MFDataset
-    nc = MFDataset(np.array(nc_files)[nc_times >= nc_switch], aggdim='time')
+    # Change to migrate from python 2 to 3 (Ali's edit):
+    # In Python 3 with recent netCDF4, MFDataset should be accessed as netCDF4.MFDataset
+    import netCDF4
+    import numpy as np  # make sure this is imported
+
+    # Ensure inputs are arrays
+    nc_times = np.array(nc_times)
+    nc_files = np.array(nc_files)
+
+    filtered_files = nc_files[nc_times >= nc_switch].tolist()
+
+    if len(filtered_files) == 0:
+        raise ValueError("No netCDF files meet the date condition — check nc_times and nc_switch")
+
+    nc = netCDF4.MFDataset(filtered_files, aggdim='time')
+    # nc = netCDF4.MFDataset(np.array(nc_files)[nc_times >= nc_switch], aggdim='time')
     precips.append(nc.variables['Total_precipitation'][:]) # already in [mm]
     nc.close()
 
@@ -81,7 +101,9 @@ if np.sum(nc_times < nc_switch): # older netCDF files must be opened one-by-one
 
         # if neither of those are found, exit
         else:
-            print 'Could not find precipitation data in %s' % (nc_file)
+            # Change to migrate from python 2 to 3 (edited by Ali):
+            # In Python 3, print is a function and must be called using parentheses.
+            print ('Could not find precipitation data in %s' % (nc_file))
             sys.exit(1)
 
         nc.close()
@@ -116,4 +138,6 @@ for depth in sorted(api_params.keys()):
     
 # save precipitation to CSV
 out_dir = output_data_dir + 'precip/stageiv_api/'
+import os
+os.makedirs(out_dir, exist_ok=True)
 api_df.to_csv(out_dir + 'api_%s.csv' % (date.strftime('%Y%m%d')))
