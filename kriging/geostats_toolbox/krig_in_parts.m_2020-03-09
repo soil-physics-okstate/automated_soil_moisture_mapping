@@ -1,0 +1,26 @@
+function [Zpred,Vpred,x,y] = krig_in_parts(obs,pred,beta,maxpoints,maxdist,Gmodel,Kmodel,nugget)
+
+parts = round(linspace(1,length(pred),100));
+gridX = pred(:,1); % Grid x coordinates
+gridY = pred(:,2); % Grid y coordinates
+Zpred = [];     % Pre-allocate kriging prediction variable
+Vpred = [];     % Pre-allocate kriging variance variable
+xy = [];        % Pre-allocate x-y holding tank (later used to index kriging results)
+
+for i=1:length(parts)-1                     % Kriging in parts
+    [tZpred tVpred] = krig(obs,[gridX(parts(i):parts(i+1),1) gridY(parts(i):parts(i+1),1)],beta,maxpoints,maxdist,Gmodel,Kmodel,nugget); % Calculate kriging in groups of 2853 or 2854 (100 iterations = 282,356 grid points)
+    tempxy = [gridX(parts(i):parts(i+1),1) gridY(parts(i):parts(i+1),1)]; % Create holding tank for x-y; used to index kriging results
+    Zpred = cat(1,Zpred,tZpred);            % Add current group of kriging prediction values to master list of preditction values
+    Vpred = cat(1,Vpred,tVpred);            % Add current group of kriging variances to master list of variances
+    xy = cat(1,xy,tempxy);                  % Add current (ith group) x-y index to master index list
+end
+
+krigResult = cat(2,Zpred,Vpred,xy);         % Combine x-y locations to kriging results (prediction values and variance)
+krigResult = unique(krigResult, 'rows');    % Because of the overlap in parts/linspace/for loop, duplicates should be removed
+
+Zpred = krigResult(:,1);
+Vpred = krigResult(:,2);
+x = krigResult(:,3);
+y = krigResult(:,4);
+ 
+end

@@ -24,10 +24,10 @@ mapvar="vwc"
 depths="5 25 60"
 
 # change into directory
-cd $basedir
+cd "$basedir"
 
 # activate virtual environment
-source ./venv/bin/activate
+# source ./venv/Scripts/activate
 
 # array to collect months where we'll need to (re)build netCDF files
 months=()
@@ -58,8 +58,20 @@ for d in `seq 0 $days`; do
     cd ..
 
     # do kriging and plotting
-    echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
-    parallel --jobs 3 --delay 15 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: $depths
+    #echo "  Kriging, creating output, and plotting depths in parallel for ${date}..."
+    echo "  Kriging, creating output, and plotting depths for ${date}..."
+    pids=()
+    for depth in $depths; do
+        bash krige_plot_parallel.sh "$date" "$depth" &
+        pids+=($!)  # collect the pid for all processes
+    done
+    for pid in "${pids[@]}"; do
+        wait "$pid" # wait all processes to be done
+    done
+    # for depth in $depths; do
+    #    bash krige_plot_parallel.sh "$date" "$depth"
+    # done
+    #parallel --jobs 3 --delay 15 --timeout 3600 "bash krige_plot_parallel.sh $date {1}" ::: $depths
 
     echo "  Done."
 
@@ -76,5 +88,5 @@ cd ..
 echo "  Done."
 
 # cleanup
-cd $basedir
-deactivate
+cd "$basedir"
+# deactivate

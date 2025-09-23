@@ -15,7 +15,7 @@ import numpy as np
 import datetime as dt
 import pytz
 import os
-import gdal
+from osgeo import gdal
 import netCDF4
 import ok_vwc_grid # lats and lons
 import sys
@@ -379,8 +379,8 @@ for date_str in dates:
             if (ds != None):
                 # The GeoTransform on a good/full raster file should be:
                 # (-484000, 800, 0, 140000, 0, -800) as floating point numbers.
-                xoffset = abs(-484000 - int(ds.GetGeoTransform()[0]))/800
-                yoffset = (140000 - int(ds.GetGeoTransform()[3]))/800
+                xoffset = int(abs(-484000 - int(ds.GetGeoTransform()[0]))/800)
+                yoffset = int((140000 - int(ds.GetGeoTransform()[3]))/800)
                 xend = xoffset + ds.RasterXSize
                 yend = yoffset + ds.RasterYSize
                 a[yoffset:yend, xoffset:xend] = ds.ReadAsArray()

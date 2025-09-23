@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pickle
 import numpy as np
 from pandas import read_csv, concat
+import os
 
 date_in = argv[1] # current date passed in as yyyy-mm-dd
 date = datetime.strptime(date_in, '%Y-%m-%d') # convert to a datetime object
@@ -21,7 +22,9 @@ input_data_dir = '../static_data/'
 output_data_dir = '../dynamic_data/'
 
 # load the MesoSoil data
-df = pickle.load(open(input_data_dir + 'soil_properties/meso_soil/MesoSoilv2_0.pickle'))
+# Change to migrate from python 2 to 3 (edited by Ali):
+# Python 3 needs to open files in binary mode ('rb')
+df = pickle.load(open(input_data_dir + 'soil_properties/meso_soil/MesoSoilv2_0_py3.pkl', 'rb'))
 
 # load the Mesonet sensor temperature rise data
 tr_df = read_csv(url % (date.year, date.month, date.day, date_str),
@@ -49,8 +52,11 @@ Se_df = (vwc_df - df['theta_r'])/(df['theta_s'] - df['theta_r'])
 #sm_df = concat([df['TR'], MP_df, vwc_df, Se_df, K_df], axis=1, keys=['TR', 'MP', 'vwc', 'Se', 'K'])
 sm_df = concat([df['TR'], MP_df, vwc_df, Se_df], axis=1, keys=['TR', 'MP', 'vwc', 'Se'])
 sm_df.columns.names = [None, None]
-sm_df = sm_df.sort_index(1).loc[:, (slice(None), use_depths)]
+# Change to migrate from python 2 to 3 (edited by Ali):
+# Use axis=1 as a keyword argument for compatibility with pandas v1.0+ (Python 3)
+sm_df = sm_df.sort_index(axis=1).loc[:, (slice(None), use_depths)]
 
 # save the soil moisture DataFrame
 out_dir = output_data_dir + 'soil_moisture/06Z/'
+os.makedirs(out_dir, exist_ok=True)
 sm_df.to_csv(out_dir + 'sm_data_%s.csv' % (date.strftime('%Y%m%d')))

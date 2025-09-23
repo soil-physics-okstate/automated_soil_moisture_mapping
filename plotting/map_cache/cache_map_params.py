@@ -44,4 +44,6 @@ map_params = {
 
 import pickle
 
-pickle.dump(map_params, open('map_params.pickle', 'w'))
+# pickle.dump(map_params, open('map_params.pickle', 'w'))
+with open('map_params.pickle', 'wb') as f:
+    pickle.dump(map_params, f)

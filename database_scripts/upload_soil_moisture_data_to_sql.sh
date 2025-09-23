@@ -26,18 +26,21 @@ product_value DOUBLE PRECISION \
 );"
 
 # create table
-psql $dbname -c "DROP TABLE ${table};"
-psql $dbname -c "$query"
+# PGUSER=postgres PGPASSWORD=Ali292Ali292 psql $dbname -c "DROP TABLE ${table};"
+# PGUSER=postgres PGPASSWORD=Ali292Ali292 psql $dbname -c "$query"
+export PGUSER="postgres"
+export PGPASSWORD="Ali292Ali292"
+psql -d "$dbname" -c "DROP TABLE ${table};"
 
 # get CSV filename
 depth=`printf %02d $depth`
 csv=${map_var}_${depth}cm_${date//-/}.csv
 
 # insert data
-cat ../output/kriging_result/$csv | psql $dbname -c "COPY $table (id, product_value) FROM stdin CSV HEADER;"
+cat ../output/kriging_result/"$csv" | psql -d "$dbname" -c "COPY $table (id, product_value) FROM stdin CSV HEADER;"
 
 # copy to soil_moisture_data
 query="INSERT INTO soil_moisture_data (SELECT * FROM ${table}) \
 ON CONFLICT ON CONSTRAINT soil_moisture_data_pkey \
 DO UPDATE SET product_value = EXCLUDED.product_value;"
-psql $dbname -c "$query"
+psql -d "$dbname" -c "$query"
