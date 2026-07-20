@@ -59,21 +59,8 @@ from pandas import read_csv
 
 api_df = read_csv(api_file, index_col=[0,1])
 resid_df = read_csv(resid_file, index_col=[0,1])
-print(api_df.head())
-print(resid_df.head())
-# # give the soil, api, and sm DataFrame column names
-# # that match the model results
-# soil_df.columns = ['%s_%d' % (col) for col in soil_df.columns.values]
-# api_df.columns = ['api_%s' % (col) for col in api_df.columns.values]
 
-# # combine and clean data
-# df = grid_df.join(soil_df['sand_%d' % (depth)], on='mukey')\
-#             .join(api_df['api_%d' % (depth)], on=['s4x', 's4y'])\
-#             .join(resid_df, on=['x', 'y'])
-# df = df.sort_index() # sort by (x, y)
-# df = df.reset_index() # put (x, y) back into the columns
-# df = df.dropna() # drop NaNs
-# give the soil and api DataFrame column names
+# give the soil, api, and sm DataFrame column names
 # that match the model results
 import pandas as pd
 import numpy as np

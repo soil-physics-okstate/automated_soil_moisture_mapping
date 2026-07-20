@@ -15,11 +15,8 @@ output_data_dir = '../dynamic_data/'
 date_str = date.strftime('%Y%m%d') # filenames all end in yyyymmdd
 
 # load static (pickled) data sources
-# Change to migrate from python 2 to 3 (edited by Ali):
-# cPickle was merged into pickle in Python 3.
-import pickle
-# Change to migrate from python 2 to 3 (edited by Ali):
-# In Python 3, pickle.load() requires binary mode 'rb' for reading.
+import cPickle as pickle
+
 meso_df = pickle.load(open(input_static_data_dir + 
                            'mesonet/mesonet_geoinfo_ssurgo_stageiv_py3.pkl', 'rb'))
 soil_df = pickle.load(open(input_static_data_dir + 
@@ -151,52 +148,6 @@ import statsmodels.formula.api as smf
 
 # store regression results in a dictionary
 results = {}
-
-import statsmodels.formula.api as smf
-
-def run_regressions(df, depths, _date_str, _output_data_dir):
-    results = {}
-
-    for d in depths:
-        formula = f'vwc_{d} ~ sand_{d} + api_{d}'
-        print("\n==============================")
-        print("Depth:", d)
-        print("Formula:", formula)
-
-        # Get variable names used in the formula
-        target = formula.split("~")[0].strip()
-        predictors = [x.strip() for x in formula.split("~")[1].split("+")]
-        model_cols = [target] + predictors
-
-        print("Model columns:", model_cols)
-
-        missing_cols = [c for c in model_cols if c not in df.columns]
-        print("Missing columns:", missing_cols)
-
-        if not missing_cols:
-            temp = df[model_cols].replace([np.inf, -np.inf], np.nan)
-            print("Original rows:", temp.shape[0])
-            print("Rows after dropna:", temp.dropna().shape[0])
-            print("NaN count:")
-            print(temp.isna().sum())
-
-            if temp.dropna().shape[0] == 0:
-                print("SKIPPING depth", d, "because no valid rows are available.")
-                continue
-        results[d] = smf.ols(formula, data=df).fit()
-
-        df[f'fit_{d}'] = results[d].fittedvalues
-        df[f'resid_{d}'] = results[d].resid
-
-    output_vars = ['x', 'y', 'resid_10', 'resid_30', 'resid_60', 'resid_90']
-    df[output_vars].to_csv(f'{_output_data_dir}regression/residual/resid_{date_str}.csv')
-
-    with open(f'{_output_data_dir}regression/model/model_{_date_str}.pkl', 'wb') as f:
-        pickle.dump(results, f)
-
-# Example usage
-run_regressions(df, depths=[10, 30, 60, 90], _date_str=date_str, _output_data_dir = output_data_dir)
-
 
 # do the fitting for each depth
 # for d in depths:

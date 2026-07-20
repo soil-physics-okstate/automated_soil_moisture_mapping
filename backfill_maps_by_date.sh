@@ -7,7 +7,7 @@ basedir=$(dirname "$(readlink -f "$0")")
 export PATH=$PATH:/usr/bin:/usr/local/MATLAB/R2015a/bin/
 
 # set path for GNU parallel
-export PATH=$PATH:$HOME/local/bin
+export PATH=$PATH:/opt/soilmapnik/local/bin
 
 # check if number of days are set
 if [[ $# -ne 2 ]]; then

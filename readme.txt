@@ -1,4 +1,5 @@
 virtual env is VENV
 conda activate VENV
 
-#comment
+virtual env is VENV
+conda activate VENV

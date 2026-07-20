@@ -8,10 +8,9 @@ from pandas import DataFrame
 from os.path import isfile
 
 api_params = { # parameters for the Antecedent Precipitation Index
-    10: {'days': 24, 'k': 1.025},
-    30: {'days': 24, 'k': 1.006},
-    60: {'days': 22, 'k': 0.993},
-    90: {'days': 20, 'k': 0.985} # Values are not correct!
+    05: {'days': 24, 'k': 1.025},
+    25: {'days': 24, 'k': 1.006},
+    60: {'days': 22, 'k': 0.993}
 }
 nd = 24 # number of days to download data for (max of API days params)
 
